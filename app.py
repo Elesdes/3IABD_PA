@@ -4,7 +4,7 @@ from flask import request
 from flask import redirect, url_for
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/App', static_folder='App')
 app.secret_key = "super secret key"
 UPLOAD_FOLDER = './static/Temp_A_Suppr/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
