@@ -10,9 +10,6 @@ UPLOAD_FOLDER = './static/Temp_A_Suppr/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-global path
-path = 'App/static'
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -22,13 +19,13 @@ def allowed_file(filename):
 @app.route("/submit", methods=['POST', 'GET'])
 def request_from_paris():
     if request.method == 'GET':
-        return redirect(url_for(path, filename='index.html', code=302))
+        return redirect(url_for('static', filename='index.html', code=302))
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
             print("I'm here2")
             flash('No file part')
-            return redirect(url_for(path, filename='index.html', code=302))
+            return redirect(url_for('static', filename='index.html', code=302))
         file = request.files['file']
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
@@ -38,14 +35,14 @@ def request_from_paris():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for(path, filename="Temp_A_Suppr/" + filename))
+            return redirect(url_for('static', filename="Temp_A_Suppr/" + filename))
 
-    return redirect(url_for(path, filename='index.html', code=302))
+    return redirect(url_for('static', filename='index.html', code=302))
 
 
 @app.route("/")
 def root():
-    return redirect(url_for(path, filename='index.html', code=302))
+    return redirect(url_for('static', filename='index.html', code=302))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
