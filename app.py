@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_url_path='/App', static_folder='App')
 app.secret_key = "super secret key"
-UPLOAD_FOLDER = './App/Temp_A_Suppr/'
+UPLOAD_FOLDER = './App/Deposit/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -35,7 +35,7 @@ def request_from_paris():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('static', filename="Temp_A_Suppr/" + filename))
+            return redirect(url_for('static', filename="Deposit/" + filename))
 
     return redirect(url_for('static', filename='index.html', code=302))
 
