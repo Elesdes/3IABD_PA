@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_url_path='/App', static_folder='App')
 app.secret_key = "super secret key"
-UPLOAD_FOLDER = './static/Temp_A_Suppr/'
+UPLOAD_FOLDER = './App/Temp_A_Suppr/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
