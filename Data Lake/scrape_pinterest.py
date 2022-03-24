@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 
-def web_scraping_Pinterest(url):
 
+def web_scraping_Pinterest(url):
     ScrollNumber = 4
     sleepTimer = 1
 
@@ -28,4 +28,3 @@ def web_scraping_Pinterest(url):
         img_data = requests.get(link.get('src')).content
         with open(url, 'wb') as handler:
             handler.write(img_data)
-
