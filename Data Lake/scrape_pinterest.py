@@ -5,8 +5,8 @@ import time
 
 
 def web_scraping_Pinterest(url):
-    ScrollNumber = 4
-    sleepTimer = 1
+    ScrollNumber = 15
+    sleepTimer = 2
 
     options = webdriver.ChromeOptions()
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
