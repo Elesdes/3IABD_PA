@@ -134,7 +134,7 @@ double predictMLP(MLP* mlp, int* sample_inputs, int is_classification){
                 total += mlp->W[i][k][j] * mlp->X[i - 1][k];
             }
             if(i < mlp->L || is_classification){
-                total = tan(total);
+                total = tanh(total);
             }
             mlp->X[i][j] = total;
         }
@@ -143,10 +143,73 @@ double predictMLP(MLP* mlp, int* sample_inputs, int is_classification){
     return mlp->X[mlp->L][1];
 }
 
+void trainMLP(MLP* mlp, int** allSamplesInputs, int lenAllSamplesInputs, int lenOneSamplesInputs, int* allSamplesExpectedOutputs, int lenSamplesExpectedOutputs, float learningRate, int isClassification, int nbIter){
+    int k;
+    int sampleExpectedOutput[1];
+    double semiGradient;
+    double total = 0.0;
+    double temp;
+    for(int _ = 0; _ < nbIter; _++){
+        int* sampleInputs = new int[lenOneSamplesInputs];
+        k = rand()%lenAllSamplesInputs;
+        sampleInputs = allSamplesInputs[k];
+        sampleExpectedOutput[0] = allSamplesExpectedOutputs[k];
+        temp = predictMLP(mlp, sampleInputs, isClassification);
+        delete[] sampleInputs;
+        for(int j = 1; j < mlp->d[mlp->L] + 1; j++){
+            semiGradient = mlp->X[mlp->L][j] - sampleExpectedOutput[j - 1];
+            if(isClassification){
+                semiGradient = semiGradient * (pow((1 - mlp->X[mlp->L][j]), 2));
+            }
+            mlp->deltas[mlp->L][j] = semiGradient;
+        }
+        for(int L = mlp->L + 1; L >= 1 ;L--){
+            for(int i = 1; mlp->d[L - 1] + 1; i++){
+                total = 0.0;
+                for(int j = 1; j < mlp->d[L] + 1; j++){
+                    total += mlp->W[L][i][j] * mlp->deltas[L][j];
+                }
+                total = (exp((1 - mlp->X[L - 1][i], 2)) * total);
+                mlp->deltas[L - 1][i] = total;
+            }
+        }
+        for(int L = 1; mlp->L + 1; L++){
+            for(int i = 0; mlp->d[L - 1] + 1; i++){
+                for(int j = 0; mlp->d[L] + 1; j++){
+                    mlp->W[L][i][j] -= learningRate * mlp->X[L - 1][i] * mlp->deltas[L][j];
+                }
+            }
+        }
+    }
+}
+
 
 int main() {
+    srand(time(NULL));
+    int x[4][2] = {{0,0},{1,0},{0,1},{1,1}};
+    int y[4][1] = {{-1},{1},{1},{1}};
+    int lenAllX = 4;
+    int lenOneX = 2;
+    int lenAllY = 4;
+    int lenOneY = 1;
     int model[] = {2, 5, 2, 1};
+
+    printf("Before : \n");
+    /*
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 2; j++){
+            printf("%d ", x[i][j]);
+        }
+    }*/
     MLP* mlp = initiateMLP(model,3); // len(model) à donner
+    for(int i = 0; i < lenAllX; i++){
+        printf("%lf \n", predictMLP(mlp, x[i], 1));
+    }
+    trainMLP(mlp, x,lenAllX, lenOneX, y, lenAllY,0.1, 1, 10000);
+    for(int i = 0; i < lenAllX; i++){
+        printf("%lf \n", predictMLP(mlp, x[i], 1));
+    }
+
     destroy_mlp_model(mlp);
     /*
     std::cout<<mlp->L<<std::endl;
