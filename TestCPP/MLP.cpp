@@ -113,9 +113,9 @@ MLP* initiateMLP(int* npl, int lenOfD){
         for(int j=0; j<npl[i]+1; j++){
             printf("[%d][%d] : %f\n", i, j, tabDeltas[i][j]);
         }
-    }
+    }*/
 
-    */
+
 
     mlp->L = lenOfD-1;
     mlp->d = npl;
@@ -171,17 +171,20 @@ void trainMLP(MLP* mlp, int** allSamplesInputs, int lenAllSamplesInputs, int len
         for(int j = 1; j < mlp->d[mlp->L] + 1; j++){
             semiGradient = mlp->X[mlp->L][j] - sampleExpectedOutput[j - 1];
             if(isClassification){
-                semiGradient = semiGradient * (pow(1 - (mlp->X[mlp->L][j]), 2));
+                semiGradient = semiGradient * 1 - (pow((mlp->X[mlp->L][j]), 2));
             }
+            // printf("Before : %f  %f\n",mlp->deltas[mlp->L][j] ,semiGradient);
             mlp->deltas[mlp->L][j] = semiGradient;
+            // printf("After : %f  %f\n",mlp->deltas[mlp->L][j] ,semiGradient);
         }
-        for(int L = mlp->L + 1; L >= 1 ;L--){
+        for(int L = mlp->L; L >= 1 ;L--){
             for(int i = 1; i < mlp->d[L - 1] + 1; i++){
                 total = 0.0;
                 for(int j = 1; j < mlp->d[L] + 1; j++){
+                    // printf("%f\n", mlp->deltas[L][j]);
                     total += mlp->W[L][i][j] * mlp->deltas[L][j];
                 }
-                total = pow((1 - mlp->X[L - 1][i]), 2) * total;
+                total = 1 - pow((mlp->X[L - 1][i]), 2) * total;
                 mlp->deltas[L - 1][i] = total;
             }
         }
@@ -230,7 +233,7 @@ int main() {
     for(int i = 0; i < lenAllX; i++){
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
     }
-    trainMLP(mlp, xMalloc,lenAllX, lenOneX, yMalloc, lenAllY,0.1, 1, 10000);
+    trainMLP(mlp, xMalloc,lenAllX, lenOneX, yMalloc, lenAllY,0.01, 1, 10000);
     printf("After training: \n");
     for(int i = 0; i < lenAllX; i++){
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
