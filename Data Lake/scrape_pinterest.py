@@ -5,7 +5,7 @@ import time
 
 
 def web_scraping_Pinterest(url):
-    ScrollNumber = 15
+    ScrollNumber = 65
     sleepTimer = 2
 
     options = webdriver.ChromeOptions()
@@ -13,10 +13,11 @@ def web_scraping_Pinterest(url):
 
     driver = webdriver.Chrome(options=options)
     driver.get(url)
-
+    i=0
     for _ in range(1, ScrollNumber):
+        i+=1
         driver.execute_script("window.scrollTo(1,100000)")
-        print("scrolling")
+        print("scrolling",i)
         time.sleep(sleepTimer)
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
