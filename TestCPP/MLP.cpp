@@ -72,6 +72,7 @@ MLP* initiateMLP(int* npl, int lenOfD){
                     if(k==0){
                         tabW[i][j][k]=0;
                     }else{
+                        //dis(e)
                         tabW[i][j][k]=float(dis(e));
                     }
                 }
@@ -138,60 +139,78 @@ double predictMLP(MLP* mlp, int* sample_inputs, int is_classification){
     for(int i = 0; i < mlp->d[0]; i++){
         mlp->X[0][i+1] = sample_inputs[i];
     }
-
     for(int i = 1; i < mlp->L + 1; i++){
         for(int j = 1; j < mlp->d[i] + 1; j++){
             total = 0.0;
             for(int k = 0; k < mlp->d[i-1] + 1; k++){
+                //printf("%f\n",total);
                 total += mlp->W[i][k][j] * mlp->X[i - 1][k];
+                //printf("%f\n",total);
             }
             if(i < mlp->L || is_classification){
                 total = tanh(total);
             }
+            //printf("%f\n",mlp->X[i][j]);
             mlp->X[i][j] = total;
-
+            //printf("%f\n",mlp->X[i][j]);
         }
     }
     // mlp->X[mlp->L][1:] en python donc à faire gaffe!
     return mlp->X[mlp->L][1];
 }
 
+
 void trainMLP(MLP* mlp, int** allSamplesInputs, int lenAllSamplesInputs, int lenOneSamplesInputs, int* allSamplesExpectedOutputs, int lenSamplesExpectedOutputs, float learningRate, int isClassification, int nbIter){
+    //La case 1 de allSamplesInputs est corrompues
     int k;
-    int sampleExpectedOutput[1]; // TODO: A DELETE
+    int sampleExpectedOutput[1];
     double semiGradient;
     double total = 0.0;
-    double temp;
     int* sampleInputs = new int[lenOneSamplesInputs];
     for(int _ = 0; _ < nbIter; _++){
         k = rand()%lenAllSamplesInputs;
-        sampleInputs = allSamplesInputs[k];
+        for(int iter = 0; iter < lenOneSamplesInputs; iter++){
+            sampleInputs[iter] = allSamplesInputs[k][iter];
+        }
         sampleExpectedOutput[0] = allSamplesExpectedOutputs[k];
-        temp = predictMLP(mlp, sampleInputs, isClassification);
+        //printf("sampleExpectedOutput : %d\n",sampleExpectedOutput[0]);
+        predictMLP(mlp, sampleInputs, isClassification);
+        //printf("predictMLP : %f\n",predictMLP(mlp, sampleInputs, isClassification));
         for(int j = 1; j < mlp->d[mlp->L] + 1; j++){
+            // printf("%d : %f\n",sampleExpectedOutput[j - 1], mlp->X[mlp->L][j]);
             semiGradient = mlp->X[mlp->L][j] - sampleExpectedOutput[j - 1];
+            //printf("semiGradient : %f\n", semiGradient);
             if(isClassification){
-                semiGradient = semiGradient * 1 - (pow((mlp->X[mlp->L][j]), 2));
+
+                semiGradient = semiGradient * (1.0 - (pow((mlp->X[mlp->L][j]), 2)));
+                //printf("semiGradient : %f\n", semiGradient);
             }
             // printf("Before : %f  %f\n",mlp->deltas[mlp->L][j] ,semiGradient);
             mlp->deltas[mlp->L][j] = semiGradient;
+            //printf("mlp->deltas[mlp->L][j] : %f\n", mlp->deltas[mlp->L][j]);
             // printf("After : %f  %f\n",mlp->deltas[mlp->L][j] ,semiGradient);
         }
-        for(int L = mlp->L; L >= 1 ;L--){
+        for(int L = mlp->L; L > 0;L--){
             for(int i = 1; i < mlp->d[L - 1] + 1; i++){
                 total = 0.0;
+
+                //printf("total : %f\n", total);
                 for(int j = 1; j < mlp->d[L] + 1; j++){
                     // printf("%f\n", mlp->deltas[L][j]);
                     total += mlp->W[L][i][j] * mlp->deltas[L][j];
+                    //printf("total[%d] : %f\n", j, total);
                 }
-                total = 1 - pow((mlp->X[L - 1][i]), 2) * total;
+                total = (1 - pow((mlp->X[L - 1][i]), 2)) * total;
+                //printf("total FINAL : %f\n", total);
                 mlp->deltas[L - 1][i] = total;
+                //printf("mlp->deltas[L - 1][i] : %f\n", mlp->deltas[L - 1][i]);
             }
         }
         for(int L = 1; L < mlp->L + 1; L++){
             for(int i = 0; i < mlp->d[L - 1] + 1; i++){
                 for(int j = 0; j < mlp->d[L] + 1; j++){
                     mlp->W[L][i][j] -= learningRate * mlp->X[L - 1][i] * mlp->deltas[L][j];
+                    //printf("mlp->W[%d][%d][%d] : %f\n",L,i,j,mlp->W[L][i][j]);
                 }
             }
         }
@@ -227,13 +246,12 @@ int main() {
         yMalloc[i] = y[i][0];
     }
 
-
     MLP* mlp = initiateMLP(model, lenModel); // len(model) à donner
     printf("Before : \n");
     for(int i = 0; i < lenAllX; i++){
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
     }
-    trainMLP(mlp, xMalloc,lenAllX, lenOneX, yMalloc, lenAllY,0.01, 1, 10000);
+    trainMLP(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY,0.01, 1, 10000 );
     printf("After training: \n");
     for(int i = 0; i < lenAllX; i++){
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
@@ -270,7 +288,7 @@ int main() {
     destroyDoubleArray3D(mlp->W, model, mlp->L+1);
 
 
-    //destroyIntArray2D(xMalloc, lenAllX); // TODO: Pourquoi ça ne marche pas?
+    destroyIntArray2D(xMalloc, lenAllX);
     delete[] yMalloc;
     destroy_mlp_model(mlp);
     /*
