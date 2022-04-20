@@ -60,6 +60,7 @@ MLP* initiateMLP(int* npl, int lenOfD){
     double*** tabW = new double**[lenOfD];
     double** tabX = new double*[lenOfD];
     double** tabDeltas = new double*[lenOfD];
+    int* tabNPL = new int[lenOfD];
 
     for(int i=0; i<lenOfD; i++){
         if(i==0){
@@ -93,6 +94,9 @@ MLP* initiateMLP(int* npl, int lenOfD){
         }
     }
 
+    for(int i = 0; i<lenOfD; i++){
+        tabNPL[i] = npl[i];
+    }
 
     /*
     printf("TabW\n");
@@ -119,7 +123,7 @@ MLP* initiateMLP(int* npl, int lenOfD){
 
 
     mlp->L = lenOfD-1;
-    mlp->d = npl;
+    mlp->d = tabNPL;
     mlp->W = tabW;
     mlp->X = tabX;
     mlp->deltas = tabDeltas;
@@ -219,6 +223,78 @@ void trainMLP(MLP* mlp, int** allSamplesInputs, int lenAllSamplesInputs, int len
 }
 
 
+void saveModelMLP(MLP* mlp, char* filePath, int lenModel){
+    FILE *fp = fopen(filePath, "w");
+    if (fp != NULL) {
+        // L here
+        fputs("-- L --\n", fp);
+        fprintf(fp, "%d\n",mlp->L);
+        // d here
+        fputs("-- d --\n", fp);
+        for(int i = 0; i < lenModel; i++){
+            fprintf(fp, "{%d}",mlp->d[i]);
+        }
+        fprintf(fp,"\n");
+        // W here
+        fputs("-- W --\n", fp);
+        for(int i = 1; i < mlp->L+1; i++){
+            for(int j = 0; j < mlp->d[i-1]+1; j++){
+                for(int k = 0; k < mlp->d[i]+1; k++){
+                    fprintf(fp, "{%f}", mlp->W[i][j][k]);
+                }
+                fprintf(fp,"\n");
+            }
+        }
+        // X here
+        fputs("-- X --\n", fp);
+        for(int i = 0; i<mlp->L+1; i++){
+            for(int j = 0; j<mlp->d[i]+1; j++){
+                fprintf(fp, "{%f}", mlp->X[i][j]);
+            }
+            fprintf(fp,"\n");
+        }
+        // deltas here
+        fputs("-- deltas --\n", fp);
+        for(int i = 0; i<mlp->L+1; i++){
+            for(int j = 0; j<mlp->d[i]+1; j++){
+                fprintf(fp, "{%f}", mlp->deltas[i][j]);
+            }
+            fprintf(fp,"\n");
+        }
+        fclose(fp);
+    }
+}
+
+MLP *loadModelMLP(char* filePath){
+    int lenModel;
+    int* model;
+    FILE *fp = fopen(filePath, "r");
+    if (fp != NULL) {
+        char *sentence = "-- L --\n";
+        char *sentence2 = "-- d --\n";
+        char text[2000];
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, sentence)) != NULL) {
+                fscanf(fp, "%d\n", &lenModel);
+                lenModel+=1;
+            }
+            if ((strstr(text, sentence2)) != NULL) {
+                model = new int[lenModel];
+                for(int i = 0; i < lenModel; i++){
+                    fscanf(fp, "{%d}", &model[i]);
+                }
+            }
+
+        }
+        MLP* mlp = initiateMLP(model, lenModel);
+        fclose(fp);
+        return mlp;
+    }
+    int modelInit[] = {2, 5, 2, 1};
+    return initiateMLP(modelInit, 4);
+}
+
+
 int main() {
     srand(time(NULL));
     int x[4][2] = {{0,0},{1,0},{0,1},{1,1}};
@@ -247,6 +323,7 @@ int main() {
     }
 
     MLP* mlp = initiateMLP(model, lenModel); // len(model) à donner
+    //MLP* mlp = loadModelMLP("../save/save.txt");
     printf("Before : \n");
     for(int i = 0; i < lenAllX; i++){
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
@@ -256,6 +333,8 @@ int main() {
     for(int i = 0; i < lenAllX; i++){
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
     }
+    char *filePath = "../save/save.txt";
+    saveModelMLP(mlp, filePath, lenModel);
 
     /*
     printf("MLP:\nself.d : \n");
@@ -286,6 +365,7 @@ int main() {
     destroyDoubleArray2D(mlp->X, mlp->L);
     destroyDoubleArray2D(mlp->deltas, mlp->L+1);
     destroyDoubleArray3D(mlp->W, model, mlp->L+1);
+    delete[] mlp->d;
 
 
     destroyIntArray2D(xMalloc, lenAllX);
