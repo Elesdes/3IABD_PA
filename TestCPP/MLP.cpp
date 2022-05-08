@@ -74,7 +74,7 @@ MLP* initiateMLP(int* npl, int lenOfD){
                         tabW[i][j][k]=0;
                     }else{
                         //dis(e)
-                        tabW[i][j][k]=float(dis(e));
+                        tabW[i][j][k]=double(dis(e));
                     }
                 }
             }
@@ -128,12 +128,6 @@ MLP* initiateMLP(int* npl, int lenOfD){
     mlp->X = tabX;
     mlp->deltas = tabDeltas;
 
-    /*
-    destroyDoubleArray2D(tabX,lenOfD);
-    destroyDoubleArray2D(tabDeltas, lenOfD);
-    destroyDoubleArray3D(tabW,npl,lenOfD);
-    */
-
     return mlp;
 }
 
@@ -147,16 +141,12 @@ double predictMLP(MLP* mlp, int* sample_inputs, int is_classification){
         for(int j = 1; j < mlp->d[i] + 1; j++){
             total = 0.0;
             for(int k = 0; k < mlp->d[i-1] + 1; k++){
-                //printf("%f\n",total);
                 total += mlp->W[i][k][j] * mlp->X[i - 1][k];
-                //printf("%f\n",total);
             }
             if(i < mlp->L || is_classification){
                 total = tanh(total);
             }
-            //printf("%f\n",mlp->X[i][j]);
             mlp->X[i][j] = total;
-            //printf("%f\n",mlp->X[i][j]);
         }
     }
     // mlp->X[mlp->L][1:] en python donc à faire gaffe!
@@ -165,7 +155,6 @@ double predictMLP(MLP* mlp, int* sample_inputs, int is_classification){
 
 
 void trainMLP(MLP* mlp, int** allSamplesInputs, int lenAllSamplesInputs, int lenOneSamplesInputs, int* allSamplesExpectedOutputs, int lenSamplesExpectedOutputs, float learningRate, int isClassification, int nbIter){
-    //La case 1 de allSamplesInputs est corrompues
     int k;
     int sampleExpectedOutput[1];
     double semiGradient;
@@ -177,44 +166,28 @@ void trainMLP(MLP* mlp, int** allSamplesInputs, int lenAllSamplesInputs, int len
             sampleInputs[iter] = allSamplesInputs[k][iter];
         }
         sampleExpectedOutput[0] = allSamplesExpectedOutputs[k];
-        //printf("sampleExpectedOutput : %d\n",sampleExpectedOutput[0]);
         predictMLP(mlp, sampleInputs, isClassification);
-        //printf("predictMLP : %f\n",predictMLP(mlp, sampleInputs, isClassification));
         for(int j = 1; j < mlp->d[mlp->L] + 1; j++){
-            // printf("%d : %f\n",sampleExpectedOutput[j - 1], mlp->X[mlp->L][j]);
             semiGradient = mlp->X[mlp->L][j] - sampleExpectedOutput[j - 1];
-            //printf("semiGradient : %f\n", semiGradient);
             if(isClassification){
-
                 semiGradient = semiGradient * (1.0 - (pow((mlp->X[mlp->L][j]), 2)));
-                //printf("semiGradient : %f\n", semiGradient);
             }
-            // printf("Before : %f  %f\n",mlp->deltas[mlp->L][j] ,semiGradient);
             mlp->deltas[mlp->L][j] = semiGradient;
-            //printf("mlp->deltas[mlp->L][j] : %f\n", mlp->deltas[mlp->L][j]);
-            // printf("After : %f  %f\n",mlp->deltas[mlp->L][j] ,semiGradient);
         }
         for(int L = mlp->L; L > 0;L--){
             for(int i = 1; i < mlp->d[L - 1] + 1; i++){
                 total = 0.0;
-
-                //printf("total : %f\n", total);
                 for(int j = 1; j < mlp->d[L] + 1; j++){
-                    // printf("%f\n", mlp->deltas[L][j]);
                     total += mlp->W[L][i][j] * mlp->deltas[L][j];
-                    //printf("total[%d] : %f\n", j, total);
                 }
                 total = (1 - pow((mlp->X[L - 1][i]), 2)) * total;
-                //printf("total FINAL : %f\n", total);
                 mlp->deltas[L - 1][i] = total;
-                //printf("mlp->deltas[L - 1][i] : %f\n", mlp->deltas[L - 1][i]);
             }
         }
         for(int L = 1; L < mlp->L + 1; L++){
             for(int i = 0; i < mlp->d[L - 1] + 1; i++){
                 for(int j = 0; j < mlp->d[L] + 1; j++){
                     mlp->W[L][i][j] -= learningRate * mlp->X[L - 1][i] * mlp->deltas[L][j];
-                    //printf("mlp->W[%d][%d][%d] : %f\n",L,i,j,mlp->W[L][i][j]);
                 }
             }
         }
@@ -232,34 +205,30 @@ void saveModelMLP(MLP* mlp, char* filePath, int lenModel){
         // d here
         fputs("-- d --\n", fp);
         for(int i = 0; i < lenModel; i++){
-            fprintf(fp, "{%d}",mlp->d[i]);
+            fprintf(fp, "{%d}\n",mlp->d[i]);
         }
-        fprintf(fp,"\n");
         // W here
         fputs("-- W --\n", fp);
         for(int i = 1; i < mlp->L+1; i++){
             for(int j = 0; j < mlp->d[i-1]+1; j++){
                 for(int k = 0; k < mlp->d[i]+1; k++){
-                    fprintf(fp, "{%f}", mlp->W[i][j][k]);
+                    fprintf(fp, "{%lf}\n", mlp->W[i][j][k]);
                 }
-                fprintf(fp,"\n");
             }
         }
         // X here
         fputs("-- X --\n", fp);
         for(int i = 0; i<mlp->L+1; i++){
             for(int j = 0; j<mlp->d[i]+1; j++){
-                fprintf(fp, "{%f}", mlp->X[i][j]);
+                fprintf(fp, "{%lf}\n", mlp->X[i][j]);
             }
-            fprintf(fp,"\n");
         }
         // deltas here
         fputs("-- deltas --\n", fp);
         for(int i = 0; i<mlp->L+1; i++){
             for(int j = 0; j<mlp->d[i]+1; j++){
-                fprintf(fp, "{%f}", mlp->deltas[i][j]);
+                fprintf(fp, "{%lf}\n", mlp->deltas[i][j]);
             }
-            fprintf(fp,"\n");
         }
         fclose(fp);
     }
@@ -268,7 +237,9 @@ void saveModelMLP(MLP* mlp, char* filePath, int lenModel){
 MLP *loadModelMLP(char* filePath){
     int lenModel;
     int* model;
+    double temp;
     FILE *fp = fopen(filePath, "r");
+    //init l and d and the model itself
     if (fp != NULL) {
         char *sentence = "-- L --\n";
         char *sentence2 = "-- d --\n";
@@ -281,12 +252,52 @@ MLP *loadModelMLP(char* filePath){
             if ((strstr(text, sentence2)) != NULL) {
                 model = new int[lenModel];
                 for(int i = 0; i < lenModel; i++){
-                    fscanf(fp, "{%d}", &model[i]);
+                    fscanf(fp, "{%d}\n", &model[i]);
                 }
             }
 
         }
         MLP* mlp = initiateMLP(model, lenModel);
+
+        // set W
+        fseek(fp,0,SEEK_SET);
+        sentence = "-- W --\n";
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, sentence)) != NULL) {
+                for (int i = 0; i < mlp->L + 1; i++) {
+                    for (int j = 0; j < mlp->d[i - 1] + 1; j++) {
+                        for (int k = 0; k < mlp->d[i] + 1; k++) {
+                            fscanf(fp, "{%lf}\n", &mlp->W[i][j][k]);
+                        }
+                    }
+                }
+            }
+        }
+        // set X
+        fseek(fp,0,SEEK_SET);
+        sentence = "-- X --\n";
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, sentence)) != NULL) {
+                for(int i = 0; i<mlp->L + 1; i++){
+                    for(int j = 0; j<mlp->d[i]+1; j++){
+                        fscanf(fp, "{%lf}\n", &mlp->X[i][j]);
+                    }
+                }
+            }
+        }
+
+        // set deltas
+        fseek(fp,0, SEEK_SET);
+        sentence = "-- deltas --\n";
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, sentence)) != NULL) {
+                for(int i = 0; i<mlp->L + 1; i++){
+                    for(int j = 0; j<mlp->d[i]+1; j++){
+                        fscanf(fp, "{%lf}\n", &mlp->deltas[i][j]);
+                    }
+                }
+            }
+        }
         fclose(fp);
         return mlp;
     }
@@ -295,10 +306,70 @@ MLP *loadModelMLP(char* filePath){
 }
 
 
+void trainAndSaveMLP(int** x, int** y, int* model, int lenAllX, int lenOneX, int lenAllY, int lenOneY, int lenModel, int isClassification){
+    srand(time(NULL));
+    char *filePath = "../save/save.txt";
+    int **xMalloc = new int *[lenAllX];
+    int *yMalloc = new int[lenAllY];
+
+    for (int i = 0; i < lenAllX; i++) {
+        xMalloc[i] = new int[lenOneX];
+    }
+
+    for (int i = 0; i < lenAllX; i++) {
+        for (int j = 0; j < lenOneX; j++) {
+            xMalloc[i][j] = x[i][j];
+        }
+    }
+    for (int i = 0; i < lenAllY; i++) {
+        yMalloc[i] = y[i][0];
+    }
+
+    MLP *mlp = initiateMLP(model, lenModel); // len(model) à donner
+    for (int i = 0; i < lenAllX; i++) {
+        predictMLP(mlp, xMalloc[i], isClassification);
+    }
+    trainMLP(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY, 0.01, 1, 10000);
+    for (int i = 0; i < lenAllX; i++) {
+        predictMLP(mlp, xMalloc[i], 1);
+    }
+
+    saveModelMLP(mlp, filePath, lenModel);
+
+    destroyDoubleArray2D(mlp->X, mlp->L);
+    destroyDoubleArray2D(mlp->deltas, mlp->L + 1);
+    destroyDoubleArray3D(mlp->W, model, mlp->L + 1);
+    delete[] mlp->d;
+    destroyIntArray2D(xMalloc, lenAllX);
+    delete[] yMalloc;
+    destroy_mlp_model(mlp);
+}
+
+double useLoadedMLP(int* x, char* filePath, int isClassification){
+    srand(time(NULL));
+    double answer;
+
+    MLP* mlp = loadModelMLP(filePath);
+    answer = predictMLP(mlp, x, isClassification);
+
+    destroyDoubleArray2D(mlp->deltas, mlp->L + 1);
+    destroyDoubleArray3D(mlp->W, mlp->d, mlp->L + 1);
+    destroyDoubleArray2D(mlp->X, mlp->L);
+    delete[] mlp->d;
+    destroy_mlp_model(mlp);
+    return answer;
+}
+
 int main() {
     srand(time(NULL));
-    int x[4][2] = {{0,0},{1,0},{0,1},{1,1}};
-    int y[4][1] = {{-1},{1},{1},{1}};
+    int x[4][2] = {{0, 0},
+                   {1, 0},
+                   {0, 1},
+                   {1, 1}};
+    int y[4][1] = {{-1},
+                   {1},
+                   {1},
+                   {1}};
     int lenAllX = 4;
     int lenOneX = 2;
     int lenAllY = 4;
@@ -306,36 +377,37 @@ int main() {
     int model[] = {2, 5, 2, 1};
     int lenModel = 4;
 
-    int** xMalloc = new int*[lenAllX];
-    int* yMalloc = new int[lenAllY];
+    int **xMalloc = new int *[lenAllX];
+    int *yMalloc = new int[lenAllY];
 
-    for(int i = 0; i < lenAllX; i++){
+    for (int i = 0; i < lenAllX; i++) {
         xMalloc[i] = new int[lenOneX];
     }
 
-    for(int i = 0; i < lenAllX; i++){
-        for(int j = 0; j < lenOneX; j++){
+    for (int i = 0; i < lenAllX; i++) {
+        for (int j = 0; j < lenOneX; j++) {
             xMalloc[i][j] = x[i][j];
         }
     }
-    for(int i = 0; i < lenAllY; i++){
+    for (int i = 0; i < lenAllY; i++) {
         yMalloc[i] = y[i][0];
     }
 
-    MLP* mlp = initiateMLP(model, lenModel); // len(model) à donner
+    MLP *mlp = initiateMLP(model, lenModel); // len(model) à donner
     //MLP* mlp = loadModelMLP("../save/save.txt");
+
+
     printf("Before : \n");
-    for(int i = 0; i < lenAllX; i++){
+    for (int i = 0; i < lenAllX; i++) {
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
     }
-    trainMLP(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY,0.01, 1, 10000 );
+    trainMLP(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY, 0.01, 1, 10000);
     printf("After training: \n");
-    for(int i = 0; i < lenAllX; i++){
+    for (int i = 0; i < lenAllX; i++) {
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
     }
     char *filePath = "../save/save.txt";
     saveModelMLP(mlp, filePath, lenModel);
-
     /*
     printf("MLP:\nself.d : \n");
     for(int i = 0; i < lenModel; i++){
@@ -360,23 +432,17 @@ int main() {
         for(int j=0; j<model[i]+1; j++){
             printf("[%d][%d] : %f\n", i, j, mlp->deltas[i][j]);
         }
-    }*/
+    }
+     */
 
     destroyDoubleArray2D(mlp->X, mlp->L);
-    destroyDoubleArray2D(mlp->deltas, mlp->L+1);
-    destroyDoubleArray3D(mlp->W, model, mlp->L+1);
+    destroyDoubleArray2D(mlp->deltas, mlp->L + 1);
+    destroyDoubleArray3D(mlp->W, model, mlp->L + 1);
     delete[] mlp->d;
 
 
     destroyIntArray2D(xMalloc, lenAllX);
     delete[] yMalloc;
     destroy_mlp_model(mlp);
-    /*
-    std::cout<<mlp->L<<std::endl;
-    std::cout<<mlp->d<<std::endl;
-    std::cout<<mlp->W<<std::endl;
-    std::cout<<mlp->X<<std::endl;
-    std::cout<<mlp->deltas<<std::endl;
-     */
     return EXIT_SUCCESS;
 }
