@@ -7,7 +7,7 @@ from selenium import webdriver
 import time
 
 
-def web_scraping_Pinterest(url):
+def web_scraping_Pinterest(url,output_path,file_link):
     ScrollNumber = 100
     sleepTimer = 2
 
@@ -34,8 +34,8 @@ def web_scraping_Pinterest(url):
     link2 = []
     links2 = []
 
-    if os.stat("link.txt").st_size != 0:
-        with open("link.txt", "r") as fichier1:
+    if os.stat(file_link).st_size != 0:
+        with open(file_link, "r") as fichier1:
             for ligne in fichier1:
                 link.append(ligne[:len(ligne) - 1])
                 link2.append(ligne[:len(ligne) - 1])
@@ -45,7 +45,7 @@ def web_scraping_Pinterest(url):
             link2.append(p)
             links2.append(p)
 
-    with open("link.txt", "w") as fichier1:
+    with open(file_link, "w") as fichier1:
         for lin in link2:
             fichier1.write(lin + '\n')
 
@@ -56,7 +56,7 @@ def web_scraping_Pinterest(url):
 
 
     path = os.getcwd()
-    path = os.path.join(path, "EiffelTower_picture\Pinterest")
+    path = os.path.join(path, output_path)
     if not os.path.exists(path):
         os.mkdir(path)
     counter = len(link)

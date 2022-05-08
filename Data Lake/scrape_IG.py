@@ -7,7 +7,7 @@ import time
 import os
 import wget
 
-def scrap_insta_loc(user_name, password,tag_loc, directorie_outpute):
+def scrap_insta_loc(user_name, password,tag_loc, directorie_outpute,file_link):
     #specify the path to chromedriver.exe (download and save on your computer)
     options = webdriver.ChromeOptions()
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
@@ -63,7 +63,7 @@ def scrap_insta_loc(user_name, password,tag_loc, directorie_outpute):
     #increase the range to sroll more
     time.sleep(15)
 
-    n_scrolls = 100
+    n_scrolls = 150
     all_anchors = []
     for j in range(0, n_scrolls):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -81,8 +81,8 @@ def scrap_insta_loc(user_name, password,tag_loc, directorie_outpute):
     link2 = []
     all_anchors2 = []
 
-    if os.stat("link.txt").st_size != 0:
-        with open("link.txt", "r") as fichier1:
+    if os.stat(file_link).st_size != 0:
+        with open(file_link, "r") as fichier1:
             for ligne in fichier1:
                 link.append(ligne[:len(ligne)-1])
                 link2.append(ligne[:len(ligne)-1])
@@ -93,7 +93,7 @@ def scrap_insta_loc(user_name, password,tag_loc, directorie_outpute):
             link2.append(p)
             all_anchors2.append(p)
 
-    with open("link.txt", "w") as fichier1:
+    with open(file_link, "w") as fichier1:
         for lin in link2:
             fichier1.write(lin+'\n')
 

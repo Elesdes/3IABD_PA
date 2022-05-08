@@ -1,7 +1,7 @@
 
 def run():
-    # import eiffel_tower
-    import arc_de_triomphe
+    import eiffel_tower
+    # import arc_de_triomphe
 
 
 if __name__ == "__main__":

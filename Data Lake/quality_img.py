@@ -5,12 +5,13 @@ from tqdm import tqdm
 
 def modifications_size(directorie_inpute,directorie_outpute,size):
     images = []
+    len_dir = len(directorie_inpute)
     directorie_inpute = directorie_inpute + "/*.jpg"
     image_path = glob.glob(directorie_inpute)
     name = []
     for img_path in tqdm(image_path):
         img = cv2.imread(img_path)
-        name.append(img_path[35:])
+        name.append(img_path[len_dir:])
         images.append(img)
 
     def write_img(path, transform,name):
@@ -19,7 +20,6 @@ def modifications_size(directorie_inpute,directorie_outpute,size):
         for img in tqdm(pictures):
             url = path + name[i][:-4] + "_modif" + name[i][-4:]
             i += 1
-            # cv2.imshow("Image", img)
             cv2.imwrite(url, img)
             cv2.waitKey(0)
 
