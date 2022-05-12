@@ -31,6 +31,50 @@ extern "C" {
         return array[i];
     }
 
+    DLLEXPORT void saveModelLinear(float* modelWeight, char* filePath, int32_t rowsWLen){
+        FILE *fp = fopen(filePath, "w");
+        if (fp != NULL) {
+            fputs("-- W --\n", fp);
+            for(int i = 0; i < rowsWLen; i++) {
+                fprintf(fp, "{%f}\n", modelWeight[i]);
+
+            }
+            fclose(fp);
+        }
+    }
+
+    DLLEXPORT float* loadModelLinear(char* filePath){
+        int lenModel = 0;
+        int i = 0;
+        float temp;
+        FILE *fp = fopen(filePath, "r");
+        //init l and d and the model itself
+        if (fp != NULL) {
+            char *sentence = "-- W --\n";
+            char text[2000];
+            while (fgets(text, 2000, fp) != NULL) {
+                if ((strstr(text, sentence)) != NULL) {
+                    while(fscanf(fp, "{%f}\n", &temp) != EOF){
+                        lenModel+=1;
+                    }
+                }
+            }
+            fclose(fp);
+            fp = fopen(filePath, "r");
+            float* w = new float[lenModel];
+            while (fgets(text, 2000, fp) != NULL) {
+                if ((strstr(text, sentence)) != NULL) {
+                    while(fscanf(fp, "{%f}\n", &w[i]) != EOF){
+                        i++;
+                    }
+                }
+            }
+            fclose(fp);
+            return w;
+        }
+        return nullptr;
+    }
+
     DLLEXPORT float* initModelWeights(int32_t colsXLen, int32_t rowsWLen) {
         using std::cout;
         using std::endl;
