@@ -31,9 +31,11 @@ extern "C" {
         return array[i];
     }
 
-    DLLEXPORT void saveModelLinear(float* modelWeight, char* filePath, int32_t rowsWLen){
+    DLLEXPORT void saveModelLinear(float* modelWeight, char* filePath, int32_t rowsWLen, double efficiency){
         FILE *fp = fopen(filePath, "w");
         if (fp != NULL) {
+            fputs("-- Efficiency --\n", fp);
+            fprintf(fp, "%lf\n", efficiency);
             fputs("-- W --\n", fp);
             for(int i = 0; i < rowsWLen; i++) {
                 fprintf(fp, "{%f}\n", modelWeight[i]);
@@ -44,17 +46,22 @@ extern "C" {
     }
 
     DLLEXPORT float* loadModelLinear(char* filePath){
+        char *tempSentence = "-- Efficiency --\n";
+        double tempD;
         int lenModel = 0;
         int i = 0;
-        float temp;
+        float tempF;
         FILE *fp = fopen(filePath, "r");
         //init l and d and the model itself
         if (fp != NULL) {
             char *sentence = "-- W --\n";
             char text[2000];
             while (fgets(text, 2000, fp) != NULL) {
+                if ((strstr(text, tempSentence)) != NULL) {
+                    fscanf(fp, "%lf\n", &tempD);
+                }
                 if ((strstr(text, sentence)) != NULL) {
-                    while(fscanf(fp, "{%f}\n", &temp) != EOF){
+                    while(fscanf(fp, "{%f}\n", &tempF) != EOF){
                         lenModel+=1;
                     }
                 }
@@ -64,6 +71,9 @@ extern "C" {
             float* w = new float[lenModel];
             while (fgets(text, 2000, fp) != NULL) {
                 if ((strstr(text, sentence)) != NULL) {
+                    if ((strstr(text, tempSentence)) != NULL) {
+                        fscanf(fp, "%lf\n", &tempD);
+                    }
                     while(fscanf(fp, "{%f}\n", &w[i]) != EOF){
                         i++;
                     }

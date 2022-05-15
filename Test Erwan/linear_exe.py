@@ -78,7 +78,7 @@ def prepare_dll(my_dll, arr_type_y):
                                                              ctypes.POINTER(ctypes.c_float), ctypes.c_int32]
     my_dll.predictLinearModelClassificationFloat.restype = ctypes.c_int32
 
-    my_dll.saveModelLinear.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.c_char_p, ctypes.c_int32]
+    my_dll.saveModelLinear.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.c_char_p, ctypes.c_int32, ctypes.c_double]
     my_dll.saveModelLinear.restype = None
 
     my_dll.loadModelLinear.argtypes = [ctypes.c_char_p]
@@ -95,7 +95,7 @@ def set_var(x, y):
     return rowsXLen, colsXLen, rowsWLen, arr_type_y
 
 
-def training(my_dll):
+def training(my_dll, max_pourcentage):
     #doing_resizer_and_gray()
     x, y = fill_x_and_y("img/Tour Eiffel/Resized_Gray_Training/", "img/Other/Resized_Gray_Training/")
     final_result = 0
@@ -158,8 +158,15 @@ def training(my_dll):
                 final_result += 1
             print("Data: ", result, " | Result: ", y[i])
     print("Result : ", final_result, "/", len(y), " | ", final_result/len(y)*100, "%")
-    my_dll.saveModelLinear(w, b"./save/test.txt", rowsWLen)
+    pourcentage = final_result / len(y) * 100
+    if pourcentage > max_pourcentage:
+        str_file = "./save/linear/best.txt"
+        str_file = str_file.encode('UTF-8')
+        my_dll.saveModelLinear(w, str_file, rowsWLen, pourcentage)
+        my_dll.destroyFloatArray(w)
+        return pourcentage
     my_dll.destroyFloatArray(w)
+    return max_pourcentage
 
 
 def loaded(my_dll):
@@ -184,7 +191,7 @@ def loaded(my_dll):
 
     rowsXLen, colsXLen, rowsWLen, arr_type_y = set_var(x, y)
     my_dll = prepare_dll(my_dll, arr_type_y)
-    w = my_dll.loadModelLinear(b"./save/test.txt")
+    w = my_dll.loadModelLinear(b"./save/linear/best.txt")
 
     print("===TESTING===")
     final_result = 0
@@ -205,9 +212,10 @@ def loaded(my_dll):
 
 """
 if __name__ == '__main__':
+    max_pourcentage = 0
     my_cpp_dll = ctypes.CDLL(
         "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/LinearLib/cmake-build-debug/Library.dll")
 
     print("In Cpp :")
-    training(my_cpp_dll)
-    #loaded(my_cpp_dll)"""
+    #max_pourcentage = training(my_cpp_dll, max_pourcentage)
+    loaded(my_cpp_dll)"""

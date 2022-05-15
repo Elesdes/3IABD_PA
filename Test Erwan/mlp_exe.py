@@ -2,6 +2,16 @@ import ctypes
 import os
 from PIL import Image
 import numpy as np
+from tqdm import tqdm
+
+
+def to_binary(a):
+    l, m=[], []
+    for i in a:
+        l.append(ord(i))
+    for i in l:
+        m.append(int(bin(i)[2:]))
+    return m
 
 
 def resizer_and_gray(directory_source_name, directory_target_name,is_gray):
@@ -52,7 +62,7 @@ def fill_x_and_y(x_dir, y_dir):
     return x, y
 
 
-def prepare_dll(my_dll, npl, is_not_loaded):
+def prepare_dll(my_dll, npl, is_not_loaded, is_int):
     my_dll.destroyMlpModel.argtypes = [ctypes.c_void_p]
     my_dll.destroyMlpModel.restype = None
 
@@ -69,13 +79,23 @@ def prepare_dll(my_dll, npl, is_not_loaded):
     my_dll.destroyIntArray2D.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_int32)), ctypes.c_int32]
     my_dll.destroyIntArray2D.restype = None
 
-    my_dll.predictMLP.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32]
-    my_dll.predictMLP.restype = ctypes.c_double
+    if is_int:
+        my_dll.predictMLPInt.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32]
+        my_dll.predictMLPInt.restype = ctypes.c_double
+        my_dll.trainMLPInt.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(ctypes.c_int32)), ctypes.c_int32,
+                                    ctypes.c_int32, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32, ctypes.c_float,
+                                    ctypes.c_int32, ctypes.c_int32]
+        my_dll.trainMLPInt.restype = None
+    else:
+        my_dll.predictMLPFloat.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_float), ctypes.c_int32]
+        my_dll.predictMLPFloat.restype = ctypes.c_double
+        my_dll.trainMLPFloat.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(ctypes.c_float)), ctypes.c_int32,
+                                    ctypes.c_int32, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32, ctypes.c_float,
+                                    ctypes.c_int32, ctypes.c_int32]
+        my_dll.trainMLPFloat.restype = None
 
-    my_dll.trainMLP.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(ctypes.c_int32)), ctypes.c_int32, ctypes.c_int32, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32, ctypes.c_float, ctypes.c_int32,ctypes.c_int32]
-    my_dll.trainMLP.restype = None
 
-    my_dll.saveModelMLP.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int32]
+    my_dll.saveModelMLP.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int32, ctypes.c_double]
     my_dll.saveModelMLP.restype = None
 
     my_dll.useLoadedMLP.argtypes = [ctypes.POINTER(ctypes.c_int32), ctypes.c_char_p, ctypes.c_int32]
@@ -95,22 +115,28 @@ def set_var(x, y):
     return rowsXLen, colsXLen, rowsYLen, arr_type_y
 
 
-def training(my_dll):
+def training(my_dll, max_pourcentage):
     #doing_resizer_and_gray()
-    x, y = fill_x_and_y("img/Tour Eiffel/Resized_Gray_Training/", "img/Other/Resized_Gray_Training/")
     final_result = 0
-    iter = 10000
-    learning_rate = 0.01
-    if isinstance(x[0][0],int):
+    pourcentage = 0
+    # x, y = fill_x_and_y("img/Tour Eiffel/Resized_Gray_Training/", "img/Other/Resized_Gray_Training/")
+    x = np.random.random((500, 2)) * 2.0 - 1.0
+    y = np.array([1 if abs(p[0]) <= 0.3 or abs(p[1]) <= 0.3 else -1 for p in x])
+    final_result = 0
+    iter = 1000000
+    learning_rate = 0.002
+    if isinstance(x[0][0], int):
         C_TYPE = ctypes.c_int32
     else:
-        C_TYPE = ctypes.c_long
+        C_TYPE = ctypes.c_float
     POINTER_C_TYPE = ctypes.POINTER(C_TYPE)
     POINTER_POINTER_C_TYPE = ctypes.POINTER(POINTER_C_TYPE)
     ITLARR = C_TYPE * len(x[0])
+    ITLARRY = ctypes.c_long * len(y)
     PITLARR = POINTER_C_TYPE * len(x)
     ptr_x = PITLARR()
-    ptr_y = ITLARR()
+    ptr_y = ITLARRY()
+
     for i in range(len(x)):
         ptr_x[i] = ITLARR()
         for j in range(len(x[0])):
@@ -120,37 +146,64 @@ def training(my_dll):
 
     rowsXLen, colsXLen, rowsYLen, arr_type_y = set_var(x, y)
     # A CHANGER
-    npl = [2, 5, 2, 1]
+    #npl = [2, 5, 2, 1]
+    npl = [2, 4, 2, 1]
     len_npl = len(npl)
     arr_type_npl = ctypes.c_int32 * len(npl)
-    my_dll = prepare_dll(my_dll, npl, 1)
+    if isinstance(x[0][0], int):
+        my_dll = prepare_dll(my_dll, npl, 0, 1)
+    else:
+        my_dll = prepare_dll(my_dll, npl, 0, 0)
 
-    print("===TRAINING===")
+    #print("===TRAINING===")
     MLP = my_dll.initiateMLP(arr_type_npl(*npl), len_npl)
-    my_dll.trainMLP(MLP, ptr_x, rowsXLen, colsXLen, ptr_y, rowsYLen, learning_rate, 1, iter)
-    for i in range(rowsXLen):
-        print(my_dll.predictMLP(MLP, ptr_x[i], 1))
-    my_dll.saveModelMLP(MLP, b"./save/save.txt", len_npl)
+    if isinstance(x[0][0], int):
+        my_dll.trainMLPInt(MLP, ptr_x, rowsXLen, colsXLen, ptr_y, rowsYLen, learning_rate, 1, iter)
+        for i in range(rowsXLen):
+            result = my_dll.predictMLPInt(MLP, ptr_x[i], 1)
+            if (result > 0 and y[i] > 0) or (result < 0 and y[i] < 0):
+                final_result += 1
+            #print("Data : ", y[i], " | Result: ", result)
+    else:
+        my_dll.trainMLPFloat(MLP, ptr_x, rowsXLen, colsXLen, ptr_y, rowsYLen, learning_rate, 1, iter)
+        for i in range(rowsXLen):
+            result = my_dll.predictMLPFloat(MLP, ptr_x[i], 1)
+            if (result > 0 and y[i] > 0) or (result < 0 and y[i] < 0):
+                final_result += 1
+            #print("Data : ", y[i], " | Result: ", result)
+    #print("Result : ", final_result, "/", len(y), " | ", final_result / len(y) * 100, "%")
+    pourcentage = final_result / len(y) * 100
+    if pourcentage > max_pourcentage:
+        str_file = "./save/mlp/best.txt"
+        str_file = str_file.encode('UTF-8')
+        my_dll.saveModelMLP(MLP, str_file, len_npl, pourcentage)
+        my_dll.destroyMlpModel(MLP)
+        return pourcentage
     """
     my_dll.destroyDoubleArray2D()
     my_dll.destroyDoubleArray2D()
     my_dll.destroyDoubleArray3D()
     """
     my_dll.destroyMlpModel(MLP)
+    return max_pourcentage
 
 
 def loaded(my_dll):
-    x, y = fill_x_and_y("img/Tour Eiffel/Resized_Gray_Testing/", "img/Other/Resized_Gray_Testing/")
+    final_result = 0
+    # x, y = fill_x_and_y("img/Tour Eiffel/Resized_Gray_Testing/", "img/Other/Resized_Gray_Testing/")
+    x = np.random.random((500, 2)) * 2.0 - 1.0
+    y = np.array([1 if abs(p[0]) <= 0.3 or abs(p[1]) <= 0.3 else -1 for p in x])
     if isinstance(x[0][0], int):
         C_TYPE = ctypes.c_int32
     else:
-        C_TYPE = ctypes.c_long
+        C_TYPE = ctypes.c_float
     POINTER_C_TYPE = ctypes.POINTER(C_TYPE)
     POINTER_POINTER_C_TYPE = ctypes.POINTER(POINTER_C_TYPE)
     ITLARR = C_TYPE * len(x[0])
+    ITLARRY = ctypes.c_long * len(y)
     PITLARR = POINTER_C_TYPE * len(x)
     ptr_x = PITLARR()
-    ptr_y = ITLARR()
+    ptr_y = ITLARRY()
     for i in range(len(x)):
         ptr_x[i] = ITLARR()
         for j in range(len(x[0])):
@@ -165,9 +218,12 @@ def loaded(my_dll):
     my_dll.returnModel.argtypes = [ctypes.c_void_p]
     my_dll.returnModel.restype = ctypes.POINTER(ctypes.c_int32)
 
-    MLP = my_dll.loadModelMLP(b"./save/save.txt")
+    MLP = my_dll.loadModelMLP(b"./save/mlp/best.txt")
     npl = my_dll.returnModel(MLP)
-    my_dll = prepare_dll(my_dll, npl, 0)
+    if isinstance(x[0][0], int):
+        my_dll = prepare_dll(my_dll, npl, 0, 1)
+    else:
+        my_dll = prepare_dll(my_dll, npl, 0, 0)
     arr_type_npl = ctypes.c_int32 * my_dll.returnLenModel(MLP)
 
     my_dll.destroyDoubleArray3D.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_double))),
@@ -177,15 +233,28 @@ def loaded(my_dll):
     my_dll.initiateMLP.restype = ctypes.c_void_p
 
     print("===TESTING===")
-    for i in range(rowsXLen):
-        print(my_dll.predictMLP(MLP, ptr_x[i], 1))
+    if isinstance(x[0][0], int):
+        for i in range(rowsXLen):
+            result = my_dll.predictMLPInt(MLP, ptr_x[i], 1)
+            if (result > 0 and y[i] > 0) or (result < 0 and y[i] < 0):
+                final_result += 1
+            print("Data : ", y[i], " | Result: ", my_dll.predictMLPInt(MLP, ptr_x[i], 1))
+    else:
+        for i in range(rowsXLen):
+            result = my_dll.predictMLPFloat(MLP, ptr_x[i], 1)
+            if (result > 0 and y[i] > 0) or (result < 0 and y[i] < 0):
+                final_result += 1
+            print("Data : ", y[i], " | Result: ", my_dll.predictMLPFloat(MLP, ptr_x[i], 1))
+    print("Result : ", final_result, "/", len(y), " | ", final_result / len(y) * 100, "%")
     my_dll.destroyMlpModel(MLP)
 
 
 if __name__ == '__main__':
+    max_pourcentage = 0
     my_cpp_dll = ctypes.CDLL(
         "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/MLPLib/cmake-build-debug/MLPLib.dll")
 
     print("In Cpp :")
-    # training(my_cpp_dll)
+    #for i in tqdm(range(0, 10)):
+        #max_pourcentage = training(my_cpp_dll, max_pourcentage)
     loaded(my_cpp_dll)

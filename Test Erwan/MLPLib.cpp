@@ -149,7 +149,28 @@ DLLEXPORT MLP *initiateMLP(int32_t *npl, int32_t lenOfD) {
 }
 
 
-DLLEXPORT double predictMLP(MLP *mlp, int32_t *sample_inputs, int32_t is_classification) {
+DLLEXPORT double predictMLPInt(MLP *mlp, int32_t *sample_inputs, int32_t is_classification) {
+    double total = 0.0;
+    for (int i = 0; i < mlp->d[0]; i++) {
+        mlp->X[0][i + 1] = sample_inputs[i];
+    }
+    for (int i = 1; i < mlp->L + 1; i++) {
+        for (int j = 1; j < mlp->d[i] + 1; j++) {
+            total = 0.0;
+            for (int k = 0; k < mlp->d[i - 1] + 1; k++) {
+                total += mlp->W[i][k][j] * mlp->X[i - 1][k];
+            }
+            if (i < mlp->L || is_classification) {
+                total = tanh(total);
+            }
+            mlp->X[i][j] = total;
+        }
+    }
+    // mlp->X[mlp->L][1:] en python donc à faire gaffe!
+    return mlp->X[mlp->L][1];
+}
+
+DLLEXPORT double predictMLPFloat(MLP *mlp, float *sample_inputs, int32_t is_classification) {
     double total = 0.0;
     for (int i = 0; i < mlp->d[0]; i++) {
         mlp->X[0][i + 1] = sample_inputs[i];
@@ -171,9 +192,9 @@ DLLEXPORT double predictMLP(MLP *mlp, int32_t *sample_inputs, int32_t is_classif
 }
 
 
-DLLEXPORT void trainMLP(MLP *mlp, int32_t **allSamplesInputs, int32_t lenAllSamplesInputs, int32_t lenOneSamplesInputs,
-                        int32_t *allSamplesExpectedOutputs, int32_t lenSamplesExpectedOutputs, float learningRate, int32_t isClassification,
-                        int32_t nbIter) {
+DLLEXPORT void trainMLPInt(MLP *mlp, int32_t **allSamplesInputs, int32_t lenAllSamplesInputs, int32_t lenOneSamplesInputs,
+                           int32_t *allSamplesExpectedOutputs, int32_t lenSamplesExpectedOutputs, float learningRate, int32_t isClassification,
+                           int32_t nbIter) {
     int k;
     int sampleExpectedOutput[1];
     double semiGradient;
@@ -185,7 +206,50 @@ DLLEXPORT void trainMLP(MLP *mlp, int32_t **allSamplesInputs, int32_t lenAllSamp
             sampleInputs[iter] = allSamplesInputs[k][iter];
         }
         sampleExpectedOutput[0] = allSamplesExpectedOutputs[k];
-        predictMLP(mlp, sampleInputs, isClassification);
+        predictMLPInt(mlp, sampleInputs, isClassification);
+        for (int j = 1; j < mlp->d[mlp->L] + 1; j++) {
+            semiGradient = mlp->X[mlp->L][j] - sampleExpectedOutput[j - 1];
+            if (isClassification) {
+                semiGradient = semiGradient * (1.0 - (pow((mlp->X[mlp->L][j]), 2)));
+            }
+            mlp->deltas[mlp->L][j] = semiGradient;
+        }
+        for (int L = mlp->L; L > 0; L--) {
+            for (int i = 1; i < mlp->d[L - 1] + 1; i++) {
+                total = 0.0;
+                for (int j = 1; j < mlp->d[L] + 1; j++) {
+                    total += mlp->W[L][i][j] * mlp->deltas[L][j];
+                }
+                total = (1 - pow((mlp->X[L - 1][i]), 2)) * total;
+                mlp->deltas[L - 1][i] = total;
+            }
+        }
+        for (int L = 1; L < mlp->L + 1; L++) {
+            for (int i = 0; i < mlp->d[L - 1] + 1; i++) {
+                for (int j = 0; j < mlp->d[L] + 1; j++) {
+                    mlp->W[L][i][j] -= learningRate * mlp->X[L - 1][i] * mlp->deltas[L][j];
+                }
+            }
+        }
+    }
+    delete[] sampleInputs;
+}
+
+DLLEXPORT void trainMLPFloat(MLP *mlp, float **allSamplesInputs, int32_t lenAllSamplesInputs, int32_t lenOneSamplesInputs,
+                           int32_t *allSamplesExpectedOutputs, int32_t lenSamplesExpectedOutputs, float learningRate, int32_t isClassification,
+                           int32_t nbIter) {
+    int k;
+    int sampleExpectedOutput[1];
+    double semiGradient;
+    double total = 0.0;
+    float *sampleInputs = new float [lenOneSamplesInputs];
+    for (int _ = 0; _ < nbIter; _++) {
+        k = rand() % lenAllSamplesInputs;
+        for (int iter = 0; iter < lenOneSamplesInputs; iter++) {
+            sampleInputs[iter] = allSamplesInputs[k][iter];
+        }
+        sampleExpectedOutput[0] = allSamplesExpectedOutputs[k];
+        predictMLPFloat(mlp, sampleInputs, isClassification);
         for (int j = 1; j < mlp->d[mlp->L] + 1; j++) {
             semiGradient = mlp->X[mlp->L][j] - sampleExpectedOutput[j - 1];
             if (isClassification) {
@@ -215,9 +279,12 @@ DLLEXPORT void trainMLP(MLP *mlp, int32_t **allSamplesInputs, int32_t lenAllSamp
 }
 
 
-DLLEXPORT void saveModelMLP(MLP *mlp, char *filePath, int32_t lenModel) {
+DLLEXPORT void saveModelMLP(MLP *mlp, char *filePath, int32_t lenModel, double efficiency) {
     FILE *fp = fopen(filePath, "w");
     if (fp != NULL) {
+        // Efficiency here
+        fputs("-- Efficiency --\n", fp);
+        fprintf(fp, "%lf\n", efficiency);
         // L here
         fputs("-- L --\n", fp);
         fprintf(fp, "%d\n", mlp->L);
@@ -253,6 +320,7 @@ DLLEXPORT void saveModelMLP(MLP *mlp, char *filePath, int32_t lenModel) {
     }
 }
 
+
 DLLEXPORT MLP *loadModelMLP(char *filePath) {
     int lenModel;
     int *model;
@@ -260,10 +328,15 @@ DLLEXPORT MLP *loadModelMLP(char *filePath) {
     FILE *fp = fopen(filePath, "r");
     //init l and d and the model itself
     if (fp != NULL) {
+        char *tempSentence = "-- Efficiency --\n";
         char *sentence = "-- L --\n";
         char *sentence2 = "-- d --\n";
+        double temp;
         char text[2000];
         while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, tempSentence)) != NULL) {
+                fscanf(fp, "%lf\n", &temp);
+            }
             if ((strstr(text, sentence)) != NULL) {
                 fscanf(fp, "%d\n", &lenModel);
                 lenModel += 1;
@@ -347,14 +420,14 @@ DLLEXPORT void trainAndSaveMLP(int32_t **x, int32_t **y, int32_t *model, int32_t
 
     MLP *mlp = initiateMLP(model, lenModel); // len(model) à donner
     for (int i = 0; i < lenAllX; i++) {
-        predictMLP(mlp, xMalloc[i], isClassification);
+        predictMLPInt(mlp, xMalloc[i], isClassification);
     }
-    trainMLP(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY, 0.01, 1, 10000);
+    trainMLPInt(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY, 0.01, 1, 10000);
     for (int i = 0; i < lenAllX; i++) {
-        predictMLP(mlp, xMalloc[i], 1);
+        predictMLPInt(mlp, xMalloc[i], 1);
     }
-
-    saveModelMLP(mlp, filePath, lenModel);
+    //EFF 0
+    saveModelMLP(mlp, filePath, lenModel, 0.0);
 
     destroyDoubleArray2D(mlp->X, mlp->L);
     destroyDoubleArray2D(mlp->deltas, mlp->L + 1);
@@ -370,7 +443,7 @@ DLLEXPORT double useLoadedMLP(int32_t *x, char *filePath, int32_t isClassificati
     double answer;
 
     MLP *mlp = loadModelMLP(filePath);
-    answer = predictMLP(mlp, x, isClassification);
+    answer = predictMLPInt(mlp, x, isClassification);
 
     destroyDoubleArray2D(mlp->deltas, mlp->L + 1);
     destroyDoubleArray3D(mlp->W, mlp->d, mlp->L + 1);
@@ -422,10 +495,10 @@ int main() {
     for (int i = 0; i < lenAllX; i++) {
         printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
     }
-    trainMLP(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY, 0.01, 1, 10000);
+    trainMLPInt(mlp, xMalloc, lenAllX, lenOneX, yMalloc, lenAllY, 0.01, 1, 10000);
     printf("After training: \n");
     for (int i = 0; i < lenAllX; i++) {
-        printf("%f \n", predictMLP(mlp, xMalloc[i], 1));
+        printf("%f \n", predictMLPInt(mlp, xMalloc[i], 1));
     }
     char *filePath = "../save/save.txt";
     saveModelMLP(mlp, filePath, lenModel);
