@@ -1,8 +1,10 @@
+from typing import List
+
 import numpy as np
 
 
-def selection(pop, scores, k=3):
-    selection_x = np.randint(len(pop))
+def selection(pop: int, scores: float, k=3) -> List[int]:
+    selection_x = np.rand(len(pop))
     for x in np.random.randint(0, len(pop), k - 1):
         if scores(x) < scores[selection_x]:
             selection_x = x
@@ -51,3 +53,6 @@ def genetic_algorithm(objective, n_bits, n_iter, n_pop, r_cross, r_mut):
         # replace population
         pop = children
     return [best, best_eval]
+
+if __name__ == '__main__':
+    genetic_algorithm()

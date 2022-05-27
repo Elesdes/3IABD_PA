@@ -1,5 +1,7 @@
 import ctypes
 
+from typing import List, Any
+
 from Framework.Utils import image_opener as io
 from Framework.Utils import set_var as sv
 
@@ -9,7 +11,7 @@ PATH_ARC_TEST = "G:\Mon Drive\Projet Annuel 3IABD\Data Lake\Arc de triomphe\img_
 PATH_ARC_TRAIN = "G:\Mon Drive\Projet Annuel 3IABD\Data Lake\Arc de triomphe\img_train"
 
 
-def prepare_dll(my_dll, arr_type_y):
+def prepare_dll(my_dll: ctypes.cdll, arr_type_y: List[Any]) -> ctypes.cdll:
     my_dll.initModelWeights.argtypes = [ctypes.c_int32, ctypes.c_int32]
     my_dll.initModelWeights.restype = ctypes.POINTER(ctypes.c_float)
 
@@ -40,11 +42,10 @@ def prepare_dll(my_dll, arr_type_y):
 
     my_dll.loadModelLinear.argtypes = [ctypes.c_char_p]
     my_dll.loadModelLinear.restype = ctypes.POINTER(ctypes.c_float)
-
     return my_dll
 
 
-def training(my_dll, iter, max_pourcentage):
+def training(my_dll: ctypes.cdll, n_iter: int, max_pourcentage: float) -> float:
     # doing_resizer_and_gray()
     x, y = io.fill_x_and_y(PATH_TE_TRAIN, PATH_ARC_TRAIN)
     final_result = 0
@@ -69,14 +70,14 @@ def training(my_dll, iter, max_pourcentage):
     # print("===TRAINING===")
     w = my_dll.initModelWeights(colsXLen, rowsWLen)
     if isinstance(x[0][0], int):
-        w = my_dll.trainLinearInt(ptr, arr_type_y(*y), w, rowsXLen, rowsWLen, iter)
+        w = my_dll.trainLinearInt(ptr, arr_type_y(*y), w, rowsXLen, rowsWLen, n_iter)
         for i in range(rowsXLen):
             result = my_dll.predictLinearModelClassificationInt(w, ptr[i], rowsWLen)
             if (result == y[i]):
                 final_result += 1
             # print("Data: ", result, " | Result: ", y[i])
     else:
-        w = my_dll.trainLinearFloat(ptr, arr_type_y(*y), w, rowsXLen, rowsWLen, iter)
+        w = my_dll.trainLinearFloat(ptr, arr_type_y(*y), w, rowsXLen, rowsWLen, n_iter)
         for i in range(rowsXLen):
             result = my_dll.predictLinearModelClassificationFloat(w, ptr[i], rowsWLen)
             if (result == y[i]):
@@ -96,7 +97,7 @@ def training(my_dll, iter, max_pourcentage):
     final_result = 0
     if isinstance(x[0][0], int):
         for i in range(rowsXLen):
-            result = my_dll.predictLinearModelClassificationFloat(w, ptr[i], rowsWLen)
+            result = my_dll.predictLinearModelClassificationInt(w, ptr[i], rowsWLen)
             if (result == y[i]):
                 final_result += 1
             # print("Data: ", result, " | Result: ", y[i])
@@ -118,7 +119,7 @@ def training(my_dll, iter, max_pourcentage):
     return max_pourcentage
 
 
-def loaded(my_dll):
+def loaded(my_dll: ctypes.cdll) -> None:
     x, y = io.fill_x_and_y(PATH_TE_TEST, PATH_ARC_TEST)
     if isinstance(x[0][0], int):
         C_TYPE = ctypes.c_int32

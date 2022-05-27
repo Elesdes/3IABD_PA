@@ -1,8 +1,10 @@
+from typing import List, Tuple
+
 import numpy as np
 import os
 from PIL import Image
 
-def fill_x_and_y(x_dir, y_dir):
+def fill_x_and_y(x_dir: str, y_dir: str) -> List[Tuple[int, int]]:
     x = []
     y = []
     for filename in os.listdir(x_dir):

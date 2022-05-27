@@ -1,4 +1,5 @@
 import ctypes
+from typing import List, Any
 
 from Framework.Utils import image_opener as io
 from Framework.Utils import set_var as sv
@@ -9,7 +10,7 @@ PATH_ARC_TEST = "G:\Mon Drive\Projet Annuel 3IABD\Data Lake\Arc de triomphe\img_
 PATH_ARC_TRAIN = "G:\Mon Drive\Projet Annuel 3IABD\Data Lake\Arc de triomphe\img_train"
 
 
-def prepare_dll(my_dll, npl, is_not_loaded):
+def prepare_dll(my_dll: ctypes.cdll, npl: List[Any], is_not_loaded: bool) -> ctypes.cdll:
     my_dll.destroyMlpModel.argtypes = [ctypes.c_void_p]
     my_dll.destroyMlpModel.restype = None
 
@@ -47,7 +48,7 @@ def prepare_dll(my_dll, npl, is_not_loaded):
     return my_dll
 
 
-def training(my_dll):
+def training(my_dll: ctypes.cdll) -> None:
     # doing_resizer_and_gray()
     x, y = io.fill_x_and_y(PATH_TE_TRAIN, PATH_ARC_TRAIN)
     final_result = 0
@@ -93,7 +94,7 @@ def training(my_dll):
     my_dll.destroyMlpModel(MLP)
 
 
-def loaded(my_dll):
+def loaded(my_dll: ctypes.cdll) -> None:
     x, y = io.fill_x_and_y(PATH_TE_TEST, PATH_ARC_TEST)
     if isinstance(x[0][0], int):
         C_TYPE = ctypes.c_int32

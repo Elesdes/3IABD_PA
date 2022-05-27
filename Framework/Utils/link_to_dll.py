@@ -1,9 +1,9 @@
 import ctypes
 import os
-import sys
+from typing import Any
 
 
-def load_lib(path, dll_name, *argv):
+def load_lib(path: str, dll_name: str, *argv: Any) -> ctypes:
     dll = os.path.join(
         path,
         (argv[0] if argv else dll_name) + ".dll")

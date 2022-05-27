@@ -1,7 +1,8 @@
 import ctypes
+from typing import List, Tuple, Any
 
 
-def set_var(x, y):
+def set_var(x: List[int], y: List[int]) -> Tuple[int, int, int, Any]:
     rowsXLen = len(x)
     colsXLen = len(x[0])
     rowsWLen = colsXLen + 1
