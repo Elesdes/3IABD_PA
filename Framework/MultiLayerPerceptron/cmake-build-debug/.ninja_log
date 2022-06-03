@@ -1,0 +1,11 @@
+# ninja log v5
+2	239	6743238454047910	build.ninja	896f5c53ec64f6e5
+313	516	6741500112055195	libMultiLayerPerceptron.dll.a	ed3ca075d20b2b31
+313	516	6741500112055195	libMultiLayerPerceptron.dll	ed3ca075d20b2b31
+1	312	6741500110055494	CMakeFiles/MultiLayerPerceptron.dir/multiLayerPerceptron.cpp.obj	cbdb9f75b1f5c484
+4	941	6743245870710647	CMakeFiles/MultiLayerPerceptron.dir/multiLayerPerceptron.cpp.obj	cbdb9f75b1f5c484
+948	1432	6743245875585840	libMultiLayerPerceptron.dll	ed3ca075d20b2b31
+948	1432	6743245875585840	libMultiLayerPerceptron.dll.a	ed3ca075d20b2b31
+5	1131	6743247770365268	CMakeFiles/MultiLayerPerceptron.dir/multiLayerPerceptron.cpp.obj	cbdb9f75b1f5c484
+1132	1388	6743247773145255	libMultiLayerPerceptron.dll	ed3ca075d20b2b31
+1132	1388	6743247773145255	libMultiLayerPerceptron.dll.a	ed3ca075d20b2b31

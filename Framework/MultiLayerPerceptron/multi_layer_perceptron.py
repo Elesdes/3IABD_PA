@@ -1,8 +1,7 @@
 import ctypes
 from typing import List, Any
 
-from Framework.Utils import image_opener as io
-from Framework.Utils import set_var as sv
+from Framework.Utils import image_opener as io, check_functions as sv
 
 PATH_TE_TEST = "G:\Mon Drive\Projet Annuel 3IABD\Data Lake\Tour Eiffel\img_test"
 PATH_TE_TRAIN = "G:\Mon Drive\Projet Annuel 3IABD\Data Lake\Tour Eiffel\img_train"

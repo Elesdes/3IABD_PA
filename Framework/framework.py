@@ -1,10 +1,9 @@
 import sys
 
-from Utils import link_to_dll as ltd
+from Framework.Utils import link_to_dll as ltd
 
 from LinearModel import linear_model as lm
 from MultiLayerPerceptron import multi_layer_perceptron as mlp
-from RadialBasisFunction import radial_basis_function as rbf
 
 PATH_LIB_LINEAR = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/Framework/LinearModel/cmake-build-debug"
 DLL_NAME_LINEAR = "libLinearModel"
@@ -19,7 +18,7 @@ if __name__ == '__main__':
 
     # MLP
     # mlp_test = mlp.test()
-    mlp.training(ltd.load_lib(PATH_LIB_MLP, DLL_NAME_MLP, *sys.argv[1:]))
+    # mlp.training(ltd.load_lib(PATH_LIB_MLP, DLL_NAME_MLP, *sys.argv[1:]))
     # mlp = mlp.loaded(lm.load_lib(*sys.argv[1:]))
 
     # MLP with genetic algorithm for optimal results

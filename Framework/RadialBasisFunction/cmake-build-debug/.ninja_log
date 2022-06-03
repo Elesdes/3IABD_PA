@@ -1,0 +1,5 @@
+# ninja log v5
+38	389	6741500477913660	build.ninja	c1f865f629d5c8bb
+662	1199	6740800944636359	libRadialBasisFunction.dll.a	3166ae4f517f5c2c
+5	660	6740800939283876	CMakeFiles/RadialBasisFunction.dir/main.cpp.obj	afb5e5d201d425ef
+662	1199	6740800944636359	libRadialBasisFunction.dll	3166ae4f517f5c2c

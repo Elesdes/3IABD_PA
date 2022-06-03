@@ -1,0 +1,8 @@
+# ninja log v5
+648	821	6744065865517651	libLinearModel.dll.a	4766b0ed7abf8952
+648	821	6744065865517651	libLinearModel.dll	4766b0ed7abf8952
+3	252	6744080244026565	build.ninja	21c60fb408dee33d
+1	645	6744065863777630	CMakeFiles/LinearModel.dir/linearModel.cpp.obj	95fbeb93b0194525
+1	394	6744080319276590	CMakeFiles/LinearModel.dir/linearModel.cpp.obj	30bc2210bc90e4b5
+395	500	6744080320316550	libLinearModel.dll	789b7b9d0441d0c
+395	500	6744080320316550	libLinearModel.dll.a	789b7b9d0441d0c
