@@ -55,6 +55,11 @@ DLLEXPORT void destroyMlpModel(struct MLP *model) {
     delete (model);
 }
 
+DLLEXPORT void destroyDoubleArray1D(double *array){
+    delete[] array;
+}
+
+
 DLLEXPORT int32_t* returnModel(struct MLP *model){
     return model->d;
 }
@@ -137,8 +142,6 @@ DLLEXPORT MLP *initiateMLP(int32_t *npl, int32_t lenOfD) {
         }
     }*/
 
-
-
     mlp->L = lenOfD - 1;
     mlp->d = tabNPL;
     mlp->W = tabW;
@@ -192,6 +195,45 @@ DLLEXPORT double predictMLPFloat(MLP *mlp, float *sample_inputs, int32_t is_clas
 }
 
 
+DLLEXPORT double *predictMLPFloatMultipleOutputs(MLP *mlp, float *sample_inputs, int32_t is_classification, int32_t lenOneSamplesExpectedOutputs) {
+    double total = 0.0;
+    for (int i = 0; i < mlp->d[0]; i++) {
+        mlp->X[0][i + 1] = sample_inputs[i];
+    }
+    for (int i = 1; i < mlp->L + 1; i++) {
+        for (int j = 1; j < mlp->d[i] + 1; j++) {
+            total = 0.0;
+            for (int k = 0; k < mlp->d[i - 1] + 1; k++) {
+                total += mlp->W[i][k][j] * mlp->X[i - 1][k];
+            }
+            if (i < mlp->L || is_classification) {
+                total = tanh(total);
+            }
+            mlp->X[i][j] = total;
+        }
+    }
+    double *answer = new double[lenOneSamplesExpectedOutputs];
+    for (int j = 0; j < lenOneSamplesExpectedOutputs; j++) {
+        answer[j] = mlp->X[mlp->L][j+1];
+    }
+    return answer;
+}
+
+
+DLLEXPORT double readArray(double *arr, int32_t i){
+    return arr[i];
+}
+
+
+DLLEXPORT double *returnDoubleArray(int32_t lenArray){
+    double *answer = new double[lenArray];
+    for (int j = 0; j < lenArray; j++) {
+        answer[j] = 1.0;
+    }
+    return answer;
+}
+
+
 DLLEXPORT void trainMLPInt(MLP *mlp, int32_t **allSamplesInputs, int32_t lenAllSamplesInputs, int32_t lenOneSamplesInputs,
                            int32_t *allSamplesExpectedOutputs, int32_t lenSamplesExpectedOutputs, float learningRate, int32_t isClassification,
                            int32_t nbIter) {
@@ -236,8 +278,8 @@ DLLEXPORT void trainMLPInt(MLP *mlp, int32_t **allSamplesInputs, int32_t lenAllS
 }
 
 DLLEXPORT void trainMLPFloat(MLP *mlp, float **allSamplesInputs, int32_t lenAllSamplesInputs, int32_t lenOneSamplesInputs,
-                           int32_t *allSamplesExpectedOutputs, int32_t lenSamplesExpectedOutputs, float learningRate, int32_t isClassification,
-                           int32_t nbIter) {
+                             int32_t *allSamplesExpectedOutputs, int32_t lenSamplesExpectedOutputs, float learningRate, int32_t isClassification,
+                             int32_t nbIter) {
     int k;
     int sampleExpectedOutput[1];
     double semiGradient;
@@ -276,6 +318,54 @@ DLLEXPORT void trainMLPFloat(MLP *mlp, float **allSamplesInputs, int32_t lenAllS
         }
     }
     delete[] sampleInputs;
+}
+
+DLLEXPORT void trainMLPFloatMultipleOutputs(MLP *mlp, float **allSamplesInputs, int32_t lenAllSamplesInputs, int32_t lenOneSamplesInputs,
+                                            int32_t **allSamplesExpectedOutputs, int32_t lenAllSamplesExpectedOutputs, int32_t lenOneSamplesExpectedOutputs, float learningRate, int32_t isClassification,
+                                            int32_t nbIter) {
+    int k;
+    int *sampleExpectedOutput = new int [lenOneSamplesExpectedOutputs];
+    double *temp;
+    double semiGradient;
+    double total = 0.0;
+    float *sampleInputs = new float [lenOneSamplesInputs];
+    for (int _ = 0; _ < nbIter; _++) {
+        k = rand() % lenAllSamplesInputs;
+        for (int iter = 0; iter < lenOneSamplesInputs; iter++) {
+            sampleInputs[iter] = allSamplesInputs[k][iter];
+        }
+        for(int iter = 0; iter < lenOneSamplesExpectedOutputs; iter++){
+            sampleExpectedOutput[iter] = allSamplesExpectedOutputs[k][iter];
+        }
+        temp = predictMLPFloatMultipleOutputs(mlp, sampleInputs, isClassification, lenOneSamplesExpectedOutputs);
+        delete[] temp;
+        for (int j = 1; j < mlp->d[mlp->L] + 1; j++) {
+            semiGradient = mlp->X[mlp->L][j] - sampleExpectedOutput[j - 1];
+            if (isClassification) {
+                semiGradient = semiGradient * (1.0 - (pow((mlp->X[mlp->L][j]), 2)));
+            }
+            mlp->deltas[mlp->L][j] = semiGradient;
+        }
+        for (int L = mlp->L; L > 0; L--) {
+            for (int i = 1; i < mlp->d[L - 1] + 1; i++) {
+                total = 0.0;
+                for (int j = 1; j < mlp->d[L] + 1; j++) {
+                    total += mlp->W[L][i][j] * mlp->deltas[L][j];
+                }
+                total = (1 - pow((mlp->X[L - 1][i]), 2)) * total;
+                mlp->deltas[L - 1][i] = total;
+            }
+        }
+        for (int L = 1; L < mlp->L + 1; L++) {
+            for (int i = 0; i < mlp->d[L - 1] + 1; i++) {
+                for (int j = 0; j < mlp->d[L] + 1; j++) {
+                    mlp->W[L][i][j] -= learningRate * mlp->X[L - 1][i] * mlp->deltas[L][j];
+                }
+            }
+        }
+    }
+    delete[] sampleInputs;
+    delete[] sampleExpectedOutput;
 }
 
 
