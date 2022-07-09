@@ -39,7 +39,7 @@ def prepare_dll_SVM(my_dll):
     my_dll.resultSVM.argtypes = [ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.c_int32]
     my_dll.resultSVM.restype = ct.c_int32
 
-    my_dll.trainSVM.argtypes = [ct.POINTER(ct.POINTER(ct.c_double)), ct.POINTER(ct.c_int32), ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_int32, ct.c_double, ct.c_double]
+    my_dll.trainSVM.argtypes = [ct.POINTER(ct.POINTER(ct.c_double)), ct.POINTER(ct.c_int32), ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_int32, ct.c_double, ct.c_double, ct.c_int32]
     my_dll.trainSVM.restype = ct.POINTER(ct.c_double)
 
     my_dll.saveSVM.argtypes = [ct.POINTER(ct.c_double), ct.c_char_p, ct.c_int32, ct.c_double]
@@ -90,6 +90,7 @@ if __name__ == '__main__':
     ])
     l_rate = 0.0005
     threshold = 0.001
+    limit = 6000000
 
     if isinstance(X[0][0], int) or isinstance(X[0][0], numpy.int32):
         C_TYPE_X = ct.c_int32
@@ -121,7 +122,7 @@ if __name__ == '__main__':
 
     w = my_dll.initSVMWeight(rowsWLen)
     derive = my_dll.initSVMWeightDerive(rowsWLen)
-    w = my_dll.trainSVM(ptr_x, ptr_y, w, derive, colsXLen, rowsXLen, rowsYLen, rowsWLen, l_rate, threshold)
+    w = my_dll.trainSVM(ptr_x, ptr_y, w, derive, colsXLen, rowsXLen, rowsYLen, rowsWLen, l_rate, threshold, limit)
     verify = 0
     result = 0
     for i in range(colsXLen):

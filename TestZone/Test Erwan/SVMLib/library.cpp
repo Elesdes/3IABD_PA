@@ -111,11 +111,12 @@ extern "C" {
 
     DLLEXPORT double *
     trainSVM(double **x, int32_t *y, double *w, double *deriveMalloc, int32_t colsXLen, int32_t rowsXLen, int32_t rowsYLen,
-             int32_t rowsWLen, double lrate, double threshold) {
+             int32_t rowsWLen, double lrate, double threshold, int limit) {
         int iter = 0;
         int isBelowThreshold = 1;
-        while (true) {
+        while (iter < limit) {
             double cost = getSVMCost(x, y, w, deriveMalloc, colsXLen, rowsXLen, rowsYLen, rowsWLen);
+            /*
             if (iter % 1000 == 0) {
                 printf("Iter: %d cost = %lf ", iter, cost);
                 for (int j = 1; j < colsXLen; j++) {
@@ -123,6 +124,7 @@ extern "C" {
                 }
                 printf("db = %lf\n", deriveMalloc[0]);
             }
+             */
             iter++;
             for (int j = 0; j < rowsXLen + 1; j++) {
                 if (abs(deriveMalloc[j]) > threshold) {
@@ -130,11 +132,13 @@ extern "C" {
                 }
             }
             if (isBelowThreshold) {
+                /*
                 printf("y = ");
                 for (int j = 1; j < rowsXLen + 1; j++) {
                     printf("%.12f *x%d + ", w[j], j);
                 }
                 printf("%.12f\n", w[0]);
+                */
                 break;
             } else {
                 isBelowThreshold = 1;
