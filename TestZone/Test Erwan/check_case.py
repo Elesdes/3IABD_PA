@@ -1,3 +1,5 @@
+import math
+import pathlib
 import sys
 import ctypes as ct
 import os
@@ -39,8 +41,8 @@ def prepare_dll_mlp(my_dll, npl, is_not_loaded):
     my_dll.predictMLPInt.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32]
     my_dll.predictMLPInt.restype = ctypes.c_double
     my_dll.trainMLPInt.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(ctypes.c_int32)), ctypes.c_int32,
-                                   ctypes.c_int32, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32, ctypes.c_float,
-                                   ctypes.c_int32, ctypes.c_int32]
+                                ctypes.c_int32, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32, ctypes.c_float,
+                                ctypes.c_int32, ctypes.c_int32]
     my_dll.trainMLPInt.restype = None
 
     my_dll.predictMLPFloat.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_float), ctypes.c_int32]
@@ -50,14 +52,14 @@ def prepare_dll_mlp(my_dll, npl, is_not_loaded):
     my_dll.predictMLPFloatMultipleOutputs.restype = ctypes.POINTER(ctypes.c_double)
 
     my_dll.trainMLPFloat.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(ctypes.c_float)), ctypes.c_int32,
-                                     ctypes.c_int32, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32, ctypes.c_float,
-                                     ctypes.c_int32, ctypes.c_int32]
+                                ctypes.c_int32, ctypes.POINTER(ctypes.c_int32), ctypes.c_int32, ctypes.c_float,
+                                ctypes.c_int32, ctypes.c_int32]
     my_dll.trainMLPFloat.restype = None
 
     my_dll.trainMLPFloatMultipleOutputs.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(ctypes.c_float)),
-                                                    ctypes.c_int32,
-                                                    ctypes.c_int32, ctypes.POINTER(ctypes.POINTER(ctypes.c_int32)), ctypes.c_int32, ctypes.c_int32, ctypes.c_float,
-                                                    ctypes.c_int32, ctypes.c_int32]
+                                     ctypes.c_int32,
+                                     ctypes.c_int32, ctypes.POINTER(ctypes.POINTER(ctypes.c_int32)), ctypes.c_int32, ctypes.c_int32, ctypes.c_float,
+                                     ctypes.c_int32, ctypes.c_int32]
     my_dll.trainMLPFloatMultipleOutputs.restype = None
 
 
@@ -93,11 +95,14 @@ def set_var_mlp(x, y, npl):
     return rowsXLen, colsXLen, rowsYLen, colsYLen, arr_type_y, len_npl
 
 
-def training_mlp(my_dll, max_pourcentage, x, y, npl, is_classification):
+def training_mlp(my_dll, max_pourcentage, x, y, npl, is_classification, file_name_given):
     pourcentage = 0
     final_result = 0
-    iter = 4000000
-    learning_rate = 0.0001
+    iter = 400000
+    learning_rate = 0.01
+    #A changer
+    str_file = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/CheckLib/save/mlp/" + file_name_given + ".txt"
+    str_file = str_file.encode('UTF-8')
 
     if isinstance(x[0][0], int) or isinstance(x[0][0], numpy.int32):
         C_TYPE = ctypes.c_int32
@@ -139,6 +144,7 @@ def training_mlp(my_dll, max_pourcentage, x, y, npl, is_classification):
 
     #print("===TRAINING===")
     MLP = my_dll.initiateMLP(arr_type_npl(*npl), len_npl)
+    #MLP = my_dll.loadModelMLP(str_file)
     if isinstance(x[0][0], int) or isinstance(x[0][0], numpy.int32):
         my_dll.trainMLPInt(MLP, ptr_x, rowsXLen, colsXLen, ptr_y, rowsYLen, learning_rate, is_classification, iter)
         for i in range(rowsXLen):
@@ -151,7 +157,7 @@ def training_mlp(my_dll, max_pourcentage, x, y, npl, is_classification):
             my_dll.trainMLPFloat(MLP, ptr_x, rowsXLen, colsXLen, ptr_y, rowsYLen, learning_rate, is_classification, iter)
         else:
             my_dll.trainMLPFloatMultipleOutputs(MLP, ptr_x, rowsXLen, colsXLen, ptr_y, rowsYLen, colsYlen, learning_rate, is_classification,
-                                                iter)
+                                 iter)
         if y.ndim < 2:
             for i in range(rowsXLen):
                 result = my_dll.predictMLPFloat(MLP, ptr_x[i], 1)
@@ -160,14 +166,13 @@ def training_mlp(my_dll, max_pourcentage, x, y, npl, is_classification):
         else:
             for i in range(rowsXLen):
                 result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[i], 1, len(y[0]))
-                # TODO: A voir /!\ range(3)
                 verify = 0
                 res_list = list()
-                for iter_test in range(3):
+                for iter_test in range(len(y[0])):
                     res_list.append(my_dll.readArray(result, iter_test))
                 #print("y[",i,"] : ",y[i], " | Result : ",test_list)
                 for case_num, res_y in enumerate(y[i]):
-                    if (res_y > 0.5 and my_dll.readArray(result, case_num) > 0.5) or (res_y < 0.5 and my_dll.readArray(result, case_num) < 0.5):
+                    if (res_y > 0 and my_dll.readArray(result, case_num) > 0) or (res_y < 0 and my_dll.readArray(result, case_num) < 0):
                         verify = verify + 1
                 #print(verify)
                 #print(len(y[0]))
@@ -177,12 +182,17 @@ def training_mlp(my_dll, max_pourcentage, x, y, npl, is_classification):
                 my_dll.destroyDoubleArray1D(result)
     print("Result : ", final_result, "/", len(y), " | ", final_result / len(y) * 100, "%")
     pourcentage = final_result / len(y) * 100
+    """
     if pourcentage > max_pourcentage:
         str_file = "./save/mlp/best.txt"
         str_file = str_file.encode('UTF-8')
         my_dll.saveModelMLP(MLP, str_file, len_npl, pourcentage)
         my_dll.destroyMlpModel(MLP)
         return pourcentage
+    """
+
+
+    my_dll.saveModelMLP(MLP, str_file, len_npl, pourcentage)
     """
     my_dll.destroyDoubleArray2D()
     my_dll.destroyDoubleArray2D()
@@ -193,7 +203,7 @@ def training_mlp(my_dll, max_pourcentage, x, y, npl, is_classification):
 
 
 def prepare_dll_linear(my_dll):
-    my_dll.initModelWeights.argtypes = [ct.c_int32, ct.c_int32]
+    my_dll.initModelWeights.argtypes = [ct.c_int32]
     my_dll.initModelWeights.restype = ct.POINTER(ct.c_float)
 
     my_dll.printFloatArray.argtypes = [ct.POINTER(ct.c_float), ct.c_int32]
@@ -209,6 +219,13 @@ def prepare_dll_linear(my_dll):
     my_dll.trainLinearFloat.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ctypes.POINTER(ctypes.c_int32),
                                         ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_float]
     my_dll.trainLinearFloat.restype = ct.POINTER(ct.c_float)
+    my_dll.trainLinearFloatMultipleOutputs.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ctypes.POINTER(ctypes.c_int32),
+                                        ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_float]
+    my_dll.trainLinearFloatMultipleOutputs.restype = ct.POINTER(ct.c_float)
+
+    my_dll.trainLinearFloatRegression.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ctypes.POINTER(ctypes.POINTER(ctypes.c_float)),
+                                        ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_int32, ct.c_int32]
+    my_dll.trainLinearFloatRegression.restype = None
 
     my_dll.predictLinearModelClassificationInt.argtypes = [ct.POINTER(ct.c_float),
                                                            ct.POINTER(ct.c_int32), ct.c_int32]
@@ -218,7 +235,10 @@ def prepare_dll_linear(my_dll):
                                                              ct.POINTER(ct.c_float), ct.c_int32]
     my_dll.predictLinearModelClassificationFloat.restype = ct.c_int32
 
-    my_dll.saveModelLinear.argtypes = [ct.POINTER(ct.c_float), ct.c_char_p, ct.c_int32]
+    my_dll.predictLinearModelRegressionFloat.argtypes = [ct.POINTER(ct.c_float), ct.POINTER(ct.c_float), ct.c_int32]
+    my_dll.predictLinearModelRegressionFloat.restype = ct.c_float
+
+    my_dll.saveModelLinear.argtypes = [ct.POINTER(ct.c_float), ct.c_char_p, ct.c_int32, ct.c_double]
     my_dll.saveModelLinear.restype = None
 
     my_dll.loadModelLinear.argtypes = [ct.c_char_p]
@@ -230,14 +250,19 @@ def prepare_dll_linear(my_dll):
     return my_dll
 
 
-def set_var_linear(x):
+def set_var_linear(x, y):
     rowsXLen = len(x)
     colsXLen = len(x[0])
     rowsWLen = colsXLen + 1
-    return rowsXLen, colsXLen, rowsWLen
+    rowsYLen = len(y)
+    if y.ndim < 2:
+        colsYLen = 1
+    else:
+        colsYLen = len(y[0])
+    return rowsXLen, colsXLen, rowsWLen, rowsYLen, colsYLen
 
 
-def training_linear(my_dll, x, y):
+def training_linear(my_dll, x, y, file_name_given, is_reg):
     # doing_resizer_and_gray()
     final_result = 0
     iter = 1000000
@@ -259,6 +284,37 @@ def training_linear(my_dll, x, y):
             ptr[i][j] = x[i][j]
 
     #Set Y
+    if is_reg:
+        if y.ndim < 2:
+            ITLARRY = ctypes.c_float * 1
+            PITLARRY = ctypes.POINTER(ctypes.c_float) * len(y)
+            ptr_y = PITLARRY()
+            for i in range(len(y)):
+                ptr_y[i] = ITLARRY()
+                ptr_y[i][0] = y[i]
+        else:
+            ITLARRY = ctypes.c_float * len(y[0])
+            PITLARRY = ctypes.POINTER(ctypes.c_float) * len(y)
+            ptr_y = PITLARRY()
+            for i in range(len(y)):
+                ptr_y[i] = ITLARRY()
+                for j in range(len(y[0])):
+                    ptr_y[i][j] = y[i][j]
+    else:
+        if y.ndim < 2:
+            ITLARRY = ctypes.c_int32 * len(y)
+            ptr_y = ITLARRY()
+            for i in range(len(y)):
+                ptr_y[i] = int(y[i])
+        else:
+            ITLARRY = ctypes.c_int32 * len(y)
+            PITLARRY = ctypes.POINTER(ctypes.c_int32) * len(y[0])
+            ptr_y = PITLARRY()
+            for i in range(len(y[0])):
+                ptr_y[i] = ITLARRY()
+                for j in range(len(y)):
+                    ptr_y[i][j] = y[j][i]
+    """
     if isinstance(y[0], int) or isinstance(y[0], numpy.int32):
         arr_type_y = ct.c_int32
     else:
@@ -267,14 +323,14 @@ def training_linear(my_dll, x, y):
     ptr_y = ITLARRY()
     for i in range(len(y)):
         ptr_y[i] = y[i]
-
-    rowsXLen, colsXLen, rowsWLen = set_var_linear(x)
+    """
+    rowsXLen, colsXLen, rowsWLen, rowsYLen, colsYLen = set_var_linear(x, y)
     my_dll = prepare_dll_linear(my_dll)
 
     print("===TRAINING===")
-    w = my_dll.initModelWeights(colsXLen, rowsWLen)
 
     if isinstance(x[0][0], int) or isinstance(x[0][0], numpy.int32):
+        w = my_dll.initModelWeights(rowsWLen)
         w = my_dll.trainLinearInt(ptr, ptr_y, w, rowsXLen, rowsWLen, iter, learning_rate)
         for i in range(rowsXLen):
             result = my_dll.predictLinearModelClassificationInt(w, ptr[i], rowsWLen)
@@ -282,12 +338,45 @@ def training_linear(my_dll, x, y):
                 final_result += 1
             #print("Data: ", result, " | Result: ", y[i])
     else:
-        w = my_dll.trainLinearFloat(ptr, ptr_y, w, rowsXLen, rowsWLen, iter, learning_rate)
-        for i in range(rowsXLen):
-            result = my_dll.predictLinearModelClassificationFloat(w, ptr[i], rowsWLen)
-            if (result == y[i]):
-                final_result += 1
-            #print("Data: ", result, " | Result: ", y[i])
+        if is_reg:
+            w = my_dll.initModelWeights(rowsWLen)
+            my_dll.trainLinearFloatRegression(ptr, ptr_y, w, colsXLen, rowsXLen, colsYLen, rowsYLen, rowsWLen)
+            for i in range(rowsXLen):
+                result = my_dll.predictLinearModelRegressionFloat(w, ptr[i], rowsWLen)
+                if (math.isclose(result, y[i], rel_tol=0.01)):
+                    final_result += 1
+        elif y.ndim < 2:
+            w = my_dll.initModelWeights(rowsWLen)
+            w = my_dll.trainLinearFloat(ptr, ptr_y, w, rowsXLen, rowsWLen, iter, learning_rate)
+            for i in range(rowsXLen):
+                result = my_dll.predictLinearModelClassificationFloat(w, ptr[i], rowsWLen)
+                if (result == y[i]):
+                    final_result += 1
+                #print("Data: ", result, " | Result: ", y[i])
+        else:
+            w = list()
+            for i in range(len(y[0])):
+                # /!!!!!!!!!!!!\ UNE LISTE DE POINTEUR ALLOUE!!! A free absolument
+                w.append(my_dll.initModelWeights(rowsWLen))
+                """
+                str_file = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/CheckLib/save/linear/" + file_name_given + str(i) + ".txt"
+                str_file = str_file.encode('UTF-8')
+                w.append(my_dll.loadModelLinear(str_file))
+                """
+                # A voir pour retourner des 0 et ne plus modifier les res
+                w[i] = my_dll.trainLinearFloat(ptr, ptr_y[i], w[i], rowsXLen, rowsWLen, iter, learning_rate)
+            for i in range(rowsXLen):
+                result = list()
+                verify = 0
+                for iter_res in range(len(y[0])):
+                    result.append(my_dll.predictLinearModelClassificationFloat(w[iter_res], ptr[i], rowsWLen))
+                #print("Result: ", result, " | ", "Y[",i,"] = ",y[i])
+                for case_num in range(len(y[0])):
+                    if (result[case_num] == y[i][case_num]):
+                        verify += 1
+                if (verify == len(y[i])):
+                    final_result += 1
+                # print("Data: ", result, " | Result: ", y[i])
     print("Result : ", final_result, "/", len(y), " | ", final_result / len(y) * 100, "%")
     """
     for i in range(len(x)):
@@ -298,6 +387,7 @@ def training_linear(my_dll, x, y):
     rowsXLen, colsXLen, rowsWLen, arr_type_y = set_var_linear(x, y)
     my_dll = prepare_dll_linear(my_dll, arr_type_y)
     """
+    """
     print("===TESTING===")
     final_result = 0
     if isinstance(x[0][0], int) or isinstance(x[0][0], numpy.int32):
@@ -307,14 +397,30 @@ def training_linear(my_dll, x, y):
                 final_result += 1
             #print("Data: ", result, " | Result: ", y[i])
     else:
-        for i in range(rowsXLen):
-            result = my_dll.predictLinearModelClassificationFloat(w, ptr[i], rowsWLen)
-            if (result == y[i]):
-                final_result += 1
-            #print("Data: ", result, " | Result: ", y[i])
-    print("Result : ", final_result, "/", len(y), " | ", final_result / len(y) * 100, "%")
-    my_dll.saveModelLinear(w, b"./save/test.txt", rowsWLen)
-    my_dll.destroyFloatArray(w)
+        if y.ndim < 2:
+            for i in range(rowsXLen):
+                result = my_dll.predictLinearModelClassificationFloat(w, ptr[i], rowsWLen)
+                if (result == y[i]):
+                    final_result += 1
+                #print("Data: ", result, " | Result: ", y[i])
+        else:
+            
+    print("Result : ", final_result, "/", len(y), " | ", final_result / len(y) * 100, "%")"""
+
+
+    if y.ndim < 2:
+        # A changer
+        str_file = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/CheckLib/save/linear/" + file_name_given + ".txt"
+        str_file = str_file.encode('UTF-8')
+        my_dll.saveModelLinear(w, str_file, rowsWLen, final_result / len(y) * 100)
+        my_dll.destroyFloatArray(w)
+    else:
+        for i in range(len(w)):
+            # A changer
+            str_file = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/CheckLib/save/linear/" + file_name_given + str(i) +".txt"
+            str_file = str_file.encode('UTF-8')
+            my_dll.saveModelLinear(w[i], str_file, rowsWLen, final_result / len(y) * 100)
+            my_dll.destroyFloatArray(w[i])
 
 
 def load_lib_linear(*argv):
@@ -359,21 +465,21 @@ if __name__ == '__main__':
         -1
     ])
     print("Linear Simple - Linear model: ")
-    training_linear(var, x, y)
+    training_linear(var, x, y, "LinearSimple",0)
     x = np.concatenate(
         [np.random.random((50, 2)) * 0.9 + np.array([1, 1]), np.random.random((50, 2)) * 0.9 + np.array([2, 2])])
     y = np.concatenate([np.ones((50, 1)), np.ones((50, 1)) * -1.0])
     y = y.astype(int).flatten()
     print("Linear Multiple - Linear model: ")
-    training_linear(var, x, y)
+    training_linear(var, x, y, "LinearMultiple",0)
     x = np.array([[1, 0], [0, 1], [0, 0], [1, 1]])
     y = np.array([1, 1, -1, -1])
     print("XOR - Linear model: ")
-    training_linear(var, x, y)
+    training_linear(var, x, y, "XOR",0)
     x = np.random.random((500, 2)) * 2.0 - 1.0
     y = np.array([1 if abs(p[0]) <= 0.3 or abs(p[1]) <= 0.3 else -1 for p in x])
     print("Cross - Linear model: ")
-    training_linear(var, x, y)
+    training_linear(var, x, y, "Cross",0)
     x = np.random.random((500, 2)) * 2.0 - 1.0
     y = np.array([[1, 0, 0] if -p[0] - p[1] - 0.5 > 0 and p[1] < 0 and p[0] - p[1] - 0.5 < 0 else
                   [0, 1, 0] if -p[0] - p[1] - 0.5 < 0 and p[1] > 0 and p[0] - p[1] - 0.5 < 0 else
@@ -382,26 +488,34 @@ if __name__ == '__main__':
     x = x[[not np.all(arr == [0, 0, 0]) for arr in y]]
     y = y[[not np.all(arr == [0, 0, 0]) for arr in y]]
     print("Multi Linear 3 classes - Linear model: ")
-    print("FAILED")
-    #training_linear(var, x, y)
+    #print("FAILED")
+    for enum_rows, rows in enumerate(y):
+        for enum_cols, cols in enumerate(rows):
+            if cols == 0:
+                y[enum_rows][enum_cols] = -1
+    training_linear(var, x, y, "MultiLinear3Classes",0)
     x = np.random.random((1000, 2)) * 2.0 - 1.0
     y = np.array([[1, 0, 0] if abs(p[0] % 0.5) <= 0.25 and abs(p[1] % 0.5) > 0.25 else [0, 1, 0] if abs(
         p[0] % 0.5) > 0.25 and abs(p[1] % 0.5) <= 0.25 else [0, 0, 1] for p in x])
+    for enum_rows, rows in enumerate(y):
+        for enum_cols, cols in enumerate(rows):
+            if cols == 0:
+                y[enum_rows][enum_cols] = -1
     print("Multi Cross - Linear model: ")
-    print("FAILED")
-    #training_linear(var, x, y)
+    #print("FAILED")
+    training_linear(var, x, y, "MultiCross",0)
     x = np.array([
-        [1],
+        [1.0],
         [2]
     ])
     y = np.array([
         2,
-        3
+        3.0
     ])
     print("Régression - Linear model: ")
-    training_linear(var, x, y)
+    training_linear(var, x, y, "Regression",1)
     x = np.array([
-        [1],
+        [1.0],
         [2],
         [3]
     ])
@@ -411,10 +525,10 @@ if __name__ == '__main__':
         2.5
     ])
     print("Non Linear Simple 2D - Linear model: ")
-    print("FAILED")
-    #training_linear(var, x, y)
+    #print("FAILED")
+    training_linear(var, x, y,"NonLinearSimple2D",1)
     x = np.array([
-        [1, 1],
+        [1.0, 1.0],
         [2, 2],
         [3, 1]
     ])
@@ -424,22 +538,22 @@ if __name__ == '__main__':
         2.5
     ])
     print("Linear Simple 3D - Linear model: ")
-    print("FAILED")
-    #training_linear(var, x, y)
+    #print("FAILED")
+    training_linear(var, x, y,"LinearSimple3D",1)
     x = np.array([
-        [1, 1],
+        [1.0, 1.0],
         [2, 2],
         [3, 3]
     ])
     y = np.array([
         1,
         2,
-        3
+        3.0
     ])
     print("Linear Tricky 3D - Linear model: ")
-    training_linear(var, x, y)
+    training_linear(var, x, y,"LinearTricky3D",1)
     x = np.array([
-        [1, 0],
+        [1.0, 0.0],
         [0, 1],
         [1, 1],
         [0, 0],
@@ -448,10 +562,11 @@ if __name__ == '__main__':
         2,
         1,
         -2,
-        -1
+        -1.0
     ])
     print("Non Linear Simple 3D - Linear model: ")
-    training_linear(var, x, y)
+    training_linear(var, x, y,"NonLinearSimple3D",1)
+    """
 
     var = load_lib_mlp(*sys.argv[1:])
     var = ctypes.CDLL(var)
@@ -468,23 +583,23 @@ if __name__ == '__main__':
         -1
     ])
     print("Linear Simple - Mlp: ")
-    training_mlp(var, max_pourcentage, x, y, npl, 1)
+    training_mlp(var, max_pourcentage, x, y, npl, 1, "LinearSimple")
     x = np.concatenate(
         [np.random.random((50, 2)) * 0.9 + np.array([1, 1]), np.random.random((50, 2)) * 0.9 + np.array([2, 2])])
     y = np.concatenate([np.ones((50, 1)), np.ones((50, 1)) * -1.0])
     y = y.astype(int).flatten()
     print("Linear Multiple - Mlp: ")
-    training_mlp(var, max_pourcentage, x, y, npl, 1)
+    training_mlp(var, max_pourcentage, x, y, npl, 1, "LinearMultiple")
     x = np.array([[1, 0], [0, 1], [0, 0], [1, 1]])
     y = np.array([1, 1, -1, -1])
     y = y.astype(int)
     print("XOR - Mlp: ")
-    training_mlp(var, max_pourcentage, x, y, npl, 1)
+    training_mlp(var, max_pourcentage, x, y, npl, 1, "XOR")
     x = np.random.random((500, 2)) * 2.0 - 1.0
     y = np.array([1 if abs(p[0]) <= 0.3 or abs(p[1]) <= 0.3 else -1 for p in x])
     npl = [2, 4, 1]
     print("Cross - Mlp: ")
-    training_mlp(var, max_pourcentage, x, y, npl, 1)
+    training_mlp(var, max_pourcentage, x, y, npl, 1, "Cross")
     x = np.random.random((500, 2)) * 2.0 - 1.0
     y = np.array([[1, 0, 0] if -p[0] - p[1] - 0.5 > 0 and p[1] < 0 and p[0] - p[1] - 0.5 < 0 else
                   [0, 1, 0] if -p[0] - p[1] - 0.5 < 0 and p[1] > 0 and p[0] - p[1] - 0.5 < 0 else
@@ -492,17 +607,25 @@ if __name__ == '__main__':
                   [0, 0, 0] for p in x])
     x = x[[not np.all(arr == [0, 0, 0]) for arr in y]]
     y = y[[not np.all(arr == [0, 0, 0]) for arr in y]]
-    npl = [2, 3]
+    for enum_rows, rows in enumerate(y):
+        for enum_cols, cols in enumerate(rows):
+            if cols == 0:
+                y[enum_rows][enum_cols] = -1
+    npl = [2, 3, 3]
     print("Multi Linear 3 classes - Mlp: ")
     #print("FAILED")
-    training_mlp(var, max_pourcentage, x, y, npl, 1)
+    training_mlp(var, max_pourcentage, x, y, npl, 1, "MultiLinear")
     x = np.random.random((1000, 2)) * 2.0 - 1.0
     y = np.array([[1, 0, 0] if abs(p[0] % 0.5) <= 0.25 and abs(p[1] % 0.5) > 0.25 else [0, 1, 0] if abs(
         p[0] % 0.5) > 0.25 and abs(p[1] % 0.5) <= 0.25 else [0, 0, 1] for p in x])
-    npl = [2, 8, 8, 3]
+    for enum_rows, rows in enumerate(y):
+        for enum_cols, cols in enumerate(rows):
+            if cols == 0:
+                y[enum_rows][enum_cols] = -1
+    npl = [2, 5, 3]
     print("Multi Cross - Mlp: ")
     #print("FAILED")
-    training_mlp(var, max_pourcentage, x, y, npl, 1)
+    training_mlp(var, max_pourcentage, x, y, npl, 1,"MultiCross")
     x = np.array([
         [1],
         [2]
@@ -513,7 +636,7 @@ if __name__ == '__main__':
     ])
     print("Régression - Mlp: ")
     npl = [1, 1]
-    training_mlp(var, max_pourcentage, x, y, npl, 0)
+    training_mlp(var, max_pourcentage, x, y, npl, 0,"Regression")
     x = np.array([
         [1],
         [2],
@@ -526,7 +649,7 @@ if __name__ == '__main__':
     ])
     print("Non Linear Simple 2D - Mlp: ")
     #print("FAILED")
-    training_mlp(var, max_pourcentage, x, y, npl, 0)
+    training_mlp(var, max_pourcentage, x, y, npl, 0, "NonLinearSimple")
     x = np.array([
         [1, 1],
         [2, 2],
@@ -539,7 +662,7 @@ if __name__ == '__main__':
     ])
     print("Linear Simple 3D - Mlp: ")
     #print("FAILED")
-    training_mlp(var, max_pourcentage, x, y, npl, 0)
+    training_mlp(var, max_pourcentage, x, y, npl, 0, "LinearSimple3D")
     x = np.array([
         [1, 1],
         [2, 2],
@@ -551,7 +674,7 @@ if __name__ == '__main__':
         3
     ])
     print("Linear Tricky 3D - Mlp: ")
-    training_mlp(var, max_pourcentage, x, y, npl, 0)
+    training_mlp(var, max_pourcentage, x, y, npl, 0, "LinearTricky3D")
     x = np.array([
         [1, 0],
         [0, 1],
@@ -566,4 +689,5 @@ if __name__ == '__main__':
     ])
     npl = [2, 1]
     print("Non Linear Simple 3D - Mlp: ")
-    training_mlp(var, max_pourcentage, x, y, npl, 0)
+    training_mlp(var, max_pourcentage, x, y, npl, 0, "NonLinearSimple3D")
+    """
