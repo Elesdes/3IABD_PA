@@ -9,18 +9,18 @@ LINEAR_LIB = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/LinearLib/cmake-build
 MLP_LIB = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/MLPLib/cmake-build-debug/MLPLib.dll"
 SVM_LIB = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/SVMLib/cmake-build-debug/SVMLib.dll"
 
-EIFFEL_TOWER_TRAINING = ""
-EIFFEL_TOWER_TESTING = ""
-TRIUMPHAL_ARC_TRAINING = ""
-TRIUMPHAL_ARC_TESTING = ""
-LOUVRE_TRAINING = ""
-LOUVRE_TESTING = ""
-PANTHEON_TRAINING = ""
-PANTHEON_TESTING = ""
+EIFFEL_TOWER_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/eiffel/training/"
+EIFFEL_TOWER_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/eiffel/testing/"
+TRIUMPHAL_ARC_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/triumphal/training/"
+TRIUMPHAL_ARC_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/triumphal/testing/"
+LOUVRE_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/louvre/training/"
+LOUVRE_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/louvre/testing/"
+PANTHEON_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/pantheon/training/"
+PANTHEON_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/pantheon/testing/"
 
-LINEAR_SAVE = ""
-MLP_SAVE = ""
-SVM_SAVE = ""
+LINEAR_SAVE = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/save/linear/"
+MLP_SAVE = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/save/mlp/"
+SVM_SAVE = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/save/svm/"
 
 def add_img(x, y, file_path, value):
     for filename in os.listdir(file_path):
@@ -77,9 +77,6 @@ def prepare_dll_mlp(my_dll, npl):
 
     my_dll.destroyDoubleArray1D.argtypes = [ct.POINTER(ct.c_double)]
     my_dll.destroyDoubleArray1D.restype = None
-
-    my_dll.predictMLPFloat.argtypes = [ct.c_void_p, ct.POINTER(ct.c_float), ct.c_int32]
-    my_dll.predictMLPFloat.restype = ct.c_double
 
     my_dll.predictMLPFloatMultipleOutputs.argtypes = [ct.c_void_p, ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32]
     my_dll.predictMLPFloatMultipleOutputs.restype = ct.POINTER(ct.c_double)
@@ -183,7 +180,7 @@ def training_linear(my_dll, x_training, y_training, x_testing, y_testing, iter, 
         result = list()
         verify = 0
         for iter_res in range(len(y_training[0])):
-            result.append(my_dll.predictLinearModelClassificationFloat(w[iter_res], ptr[i], rowsWLen))
+            result.append(my_dll.predictLinearModelClassificationInt(w[iter_res], ptr[i], rowsWLen))
         for case_num in range(len(y_training[0])):
             if (result[case_num] == y_training[i][case_num]):
                 verify += 1
@@ -218,7 +215,7 @@ def training_linear(my_dll, x_training, y_training, x_testing, y_testing, iter, 
         result = list()
         verify = 0
         for iter_res in range(len(y_testing[0])):
-            result.append(my_dll.predictLinearModelClassificationFloat(w[iter_res], ptr[i], rowsWLen))
+            result.append(my_dll.predictLinearModelClassificationInt(w[iter_res], ptr[i], rowsWLen))
         for case_num in range(len(y_testing[0])):
             if (result[case_num] == y_testing[i][case_num]):
                 verify += 1
@@ -343,13 +340,13 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
             ptr_x[i][j] = x_training[i][j]
 
     # Set Y
-    ITLARRY = ct.c_int32 * len(y_training[0])
-    PITLARRY = ct.POINTER(ct.c_int32) * len(y_training)
+    ITLARRY = ct.c_int32 * len(y_training)
+    PITLARRY = ct.POINTER(ct.c_int32) * len(y_training[0])
     ptr_y = PITLARRY()
-    for i in range(len(y_training)):
+    for i in range(len(y_training[0])):
         ptr_y[i] = ITLARRY()
-        for j in range(len(y_training[0])):
-            ptr_y[i][j] = y_training[i][j]
+        for j in range(len(y_training)):
+            ptr_y[i][j] = y_training[j][i]
 
     # Set var
     rowsXLen, colsXLen, rowsWLen, rowsYLen, colsYLen = set_var_svm(x_training, y_training)
@@ -361,8 +358,8 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
         # /!\ Allocated ptr list, needs to be free/destroy
         w.append(my_dll.initSVMWeight(rowsWLen))
         derive.append(my_dll.initSVMWeightDerive(rowsWLen))
-        w[i] = my_dll.trainSVM(ptr_x, ptr_y, w, derive, colsXLen, rowsXLen, rowsYLen, rowsWLen, learning_rate, threshold, limit)
-    for i in range(rowsXLen):
+        w[i] = my_dll.trainSVM(ptr_x, ptr_y[i], w[i], derive[i], colsXLen, rowsXLen, rowsYLen, rowsWLen, ct.c_double(learning_rate), ct.c_double(threshold), limit)
+    for i in range(rowsYLen):
         result = list()
         verify = 0
         for iter_res in range(len(y_training[0])):
@@ -386,18 +383,19 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
             ptr_x[i][j] = x_testing[i][j]
 
     # Set Y
-    ITLARRY = ct.c_int32 * len(y_testing[0])
-    PITLARRY = ct.POINTER(ct.c_int32) * len(y_testing)
+    ITLARRY = ct.c_int32 * len(y_testing)
+    PITLARRY = ct.POINTER(ct.c_int32) * len(y_testing[0])
     ptr_y = PITLARRY()
-    for i in range(len(y_testing)):
+    for i in range(len(y_testing[0])):
         ptr_y[i] = ITLARRY()
-        for j in range(len(y_testing[0])):
-            ptr_y[i][j] = y_testing[i][j]
+        for j in range(len(y_testing)):
+            ptr_y[i][j] = y_testing[j][i]
 
-    print("--- Testing MLP ---")
+    print("--- Testing SVM ---")
     rowsXLen, colsXLen, rowsWLen, rowsYLen, colsYLen = set_var_svm(x_testing, y_testing)
     verify = 0
-    for i in range(rowsXLen):
+    final_result = 0
+    for i in range(rowsYLen):
         result = list()
         verify = 0
         for iter_res in range(len(y_testing[0])):
@@ -414,7 +412,7 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
         # May be change in the near future
         str_file = SVM_SAVE + "SVM_" + str(final_result / len(y_testing)) + "_" + str(i) + ".txt"
         str_file = str_file.encode('UTF-8')
-        my_dll.saveSVM(w[i], str_file, rowsWLen, verify / len(y_testing) * 100)
+        my_dll.saveSVM(w[i], str_file, rowsWLen, ct.c_double((verify / len(y_testing) * 100)))
         my_dll.freeArr(w[i])
         my_dll.freeArr(derive[i])
 
@@ -422,10 +420,10 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
 if __name__ == '__main__':
     print("--- Starting now ---")
     # Retrieve img
-    x_training = np.array()
-    y_training = np.array()
-    x_testing = np.array()
-    y_testing = np.array()
+    x_training = list()
+    y_training = list()
+    x_testing = list()
+    y_testing = list()
     add_img(x_training, y_training, EIFFEL_TOWER_TRAINING, [1, -1, -1, -1])
     add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING, [-1, 1, -1, -1])
     add_img(x_training, y_training, LOUVRE_TRAINING, [-1, -1, 1, -1])
@@ -434,25 +432,30 @@ if __name__ == '__main__':
     add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING, [-1, 1, -1, -1])
     add_img(x_testing, y_testing, LOUVRE_TESTING, [-1, -1, 1, -1])
     add_img(x_testing, y_testing, PANTHEON_TESTING, [-1, -1, -1, 1])
+    
+    x_training = np.array(x_training)
+    y_training = np.array(y_training)
+    x_testing = np.array(x_testing)
+    y_testing = np.array(y_testing)
 
     # Linear
     my_dll = ct.CDLL(LINEAR_LIB)
-    iter = 1000000
-    learning_rate = 0.001
+    iter = 100000
+    learning_rate = 0.01
     training_linear(my_dll, x_training, y_training, x_testing, y_testing, iter, learning_rate)
-
+    
     # MLP
     my_dll = ct.CDLL(MLP_LIB)
-    iter = 1000000
+    iter = 200000
     learning_rate = 0.001
-    npl = [len(x_training[0]), 2, 4]
+    npl = [len(x_training[0]), 5, 3, 4]
     x_training = x_training.astype(float)
     x_testing = x_testing.astype(float)
     training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter, learning_rate)
 
     # SVM
     my_dll = ct.CDLL(SVM_LIB)
-    learning_rate = 0.001
-    threshold = 0.01
-    limit = 1000000
+    learning_rate = 0.0005
+    threshold = 0.001
+    limit = 100000
     training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_rate, threshold, limit)
