@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/SVMLib/library.cpp
+stdlib.h
+-
+stdio.h
+-
+time.h
+-
+cstdint
+-
+iostream
+-
+random
+-
+iomanip
+-
+

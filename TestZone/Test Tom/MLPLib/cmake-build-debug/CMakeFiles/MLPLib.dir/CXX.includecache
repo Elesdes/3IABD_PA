@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/MLPLib/MLPLib.cpp
+cstdint
+-
+iostream
+-
+stdlib.h
+-
+stdio.h
+-
+time.h
+-
+random
+-
+iomanip
+-
+

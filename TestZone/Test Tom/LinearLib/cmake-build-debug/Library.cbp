@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Library"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\..\..\..\..\eigen-3.4.0\;CMake Files\..\..\..\..\..\..\..\..\..\..\..\eigen-3.4.0\cmake\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Library">
+				<Option output="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/cmake-build-debug/Library.dll" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="C:/eigen-3.4.0"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 Library"/>
+					<CompileFile command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Library/fast">
+				<Option output="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/cmake-build-debug/Library.dll" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="C:/eigen-3.4.0"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.16299.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 Library/fast"/>
+					<CompileFile command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f &quot;C:\Users\tomca\Documents\ESGI\3IABD2\S2\Projet_Annuel\New_Annual_Project\TestZone\Test Tom\LinearLib\cmake-build-debug\Makefile&quot; VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/LinearClassificationLib.cpp">
+			<Option target="Library"/>
+		</Unit>
+		<Unit filename="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="C:/Users/tomca/Documents/ESGI/3IABD2/S2/Projet_Annuel/New_Annual_Project/TestZone/Test Tom/LinearLib/../../../../../../../../../../../eigen-3.4.0/cmake/FindEigen3.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\..\..\eigen-3.4.0\cmake\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
