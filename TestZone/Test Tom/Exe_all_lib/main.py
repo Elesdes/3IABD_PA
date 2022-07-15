@@ -127,8 +127,11 @@ def add_img(x, y, file_path, value):
         f = os.path.join(file_path, filename)
         if os.path.isfile(f):
             img = Image.open(f)
+            img = img.convert('L')
             img = np.array(img)
             img = np.ravel(img)
+            # print(img)
+            # print(len(img))
             x.append(img)
             y.append(value)
 
@@ -540,23 +543,23 @@ if __name__ == '__main__':
     y_training = list()
     x_testing = list()
     y_testing = list()
-    DS = "32_classique_max"
+    DS = "32_arg_plus_plus_max"
     print("img1")
-    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING_32_classique_max, [1, -1, -1, -1])
+    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING_32_arg_plus_plus_max, [1, -1, -1, -1])
     print("img2")
-    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING_32_classique_max, [-1, 1, -1, -1])
+    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING_32_arg_plus_plus_max, [-1, 1, -1, -1])
     print("img3")
-    add_img(x_training, y_training, LOUVRE_TRAINING_32_classique_max, [-1, -1, 1, -1])
+    add_img(x_training, y_training, LOUVRE_TRAINING_32_arg_plus_plus_max, [-1, -1, 1, -1])
     print("img4")
-    add_img(x_training, y_training, PANTHEON_TRAINING_32_classique_max, [-1, -1, -1, 1])
+    add_img(x_training, y_training, PANTHEON_TRAINING_32_arg_plus_plus_max, [-1, -1, -1, 1])
     print("img5")
-    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING_32_classique_max, [1, -1, -1, -1])
+    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING_32_arg_plus_plus_max, [1, -1, -1, -1])
     print("img6")
-    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING_32_classique_max, [-1, 1, -1, -1])
+    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING_32_arg_plus_plus_max, [-1, 1, -1, -1])
     print("img7")
-    add_img(x_testing, y_testing, LOUVRE_TESTING_32_classique_max, [-1, -1, 1, -1])
+    add_img(x_testing, y_testing, LOUVRE_TESTING_32_arg_plus_plus_max, [-1, -1, 1, -1])
     print("img8")
-    add_img(x_testing, y_testing, PANTHEON_TESTING_32_classique_max, [-1, -1, -1, 1])
+    add_img(x_testing, y_testing, PANTHEON_TESTING_32_arg_plus_plus_max, [-1, -1, -1, 1])
 
     x_training = np.array(x_training)
     y_training = np.array(y_training)
@@ -565,26 +568,39 @@ if __name__ == '__main__':
 
     # Linear
     nb_iter = 10
-    moy_res = [[], [], []]
-    iter = 10000
-    learning_rate = 0.01
-    LINEAR_SAVE = LINEAR_SAVE + f"DS{DS}-iter{iter}-LR{learning_rate}/"
-    for i in range(nb_iter):
-        LINEAR_SAVE_ = LINEAR_SAVE + f"num{i}/"
-        if not os.path.exists(LINEAR_SAVE_):
-            os.makedirs(LINEAR_SAVE_)
+    iter = [1000, 10000, 100000, 1000000]
+    learning_rate = [0.0001, 0.00005, 0.00001, 0.000005, 0.000001]
+    stat_data = []
+    for it in iter:
+        for LA in learning_rate:
+            moy_res = [[], [], []]
+            LINEAR_SAVE__ = LINEAR_SAVE + f"DS{DS}-iter{it}-LR{LA}/"
+            for i in range(nb_iter):
+                LINEAR_SAVE_ = LINEAR_SAVE__ + f"num{i}/"
+                if not os.path.exists(LINEAR_SAVE_):
+                    os.makedirs(LINEAR_SAVE_)
 
-        print(f"--- Iteration {i} ---")
-        my_dll = ct.CDLL(LINEAR_LIB)
-        res = training_linear(my_dll, x_training, y_training, x_testing, y_testing, iter, learning_rate, LINEAR_SAVE_)
-        moy_res[0].append(res[0])
-        moy_res[1].append(res[1])
-        moy_res[2].append(res[0] - res[1])
-        print(f"Diférence entre les deux : {res[0] - res[1]}")
+                print(f"\n--- Iteration {i} ---")
+                my_dll = ct.CDLL(LINEAR_LIB)
+                res = training_linear(my_dll, x_training, y_training, x_testing, y_testing, it, LA, LINEAR_SAVE_)
+                moy_res[0].append(res[0])
+                moy_res[1].append(res[1])
+                moy_res[2].append(res[0] - res[1])
+                print(f"Diférence entre les deux : {res[0] - res[1]}")
 
-    print("moyenne des trainings :", statistics.mean(moy_res[0]))
-    print("moyenne des tests :", statistics.mean(moy_res[1]))
-    print("moyenne des differences :", statistics.mean(moy_res[2]))
+            print("--- Stat ---")
+            print("moyenne des trainings :", statistics.mean(moy_res[0]))
+            print("moyenne des tests :", statistics.mean(moy_res[1]))
+            print("moyenne des differences :", statistics.mean(moy_res[2]))
+            print("la variance des train est de :", statistics.pvariance(moy_res[1]))
+            print(it, LA, statistics.mean(moy_res[0]), statistics.mean(moy_res[1]), statistics.mean(moy_res[2]),
+                  statistics.pvariance(moy_res[1]), max(moy_res[0]), max(moy_res[1]), max(moy_res[0]) - max(moy_res[1]),
+                  moy_res[1].index(max(moy_res[1])))
+            with open("D:/PA/models_save/linear_txt/32_arg_plus_plus_max.txt", "a") as filout:
+                filout.write(f"{str(DS)};{str(it)};{str(LA)};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str( statistics.mean(moy_res[2]))}"
+                             f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
+                             f";{str(moy_res[1].index(max(moy_res[1])))}\n")
+
     # # MLP
     # my_dll = ct.CDLL(MLP_LIB)
     # iter = 200000

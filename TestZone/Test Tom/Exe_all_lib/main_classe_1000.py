@@ -127,11 +127,8 @@ def add_img(x, y, file_path, value):
         f = os.path.join(file_path, filename)
         if os.path.isfile(f):
             img = Image.open(f)
-            img = img.convert('L')
             img = np.array(img)
             img = np.ravel(img)
-            # print(img)
-            # print(len(img))
             x.append(img)
             y.append(value)
 
@@ -543,23 +540,23 @@ if __name__ == '__main__':
     y_training = list()
     x_testing = list()
     y_testing = list()
-    DS = "32_arg_plus_plus_max"
+    DS = "32_classique_max"
     print("img1")
-    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING_32_arg_plus_plus_max, [1, -1, -1, -1])
+    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING_32_classique_max, [1, -1, -1, -1])
     print("img2")
-    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING_32_arg_plus_plus_max, [-1, 1, -1, -1])
+    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING_32_classique_max, [-1, 1, -1, -1])
     print("img3")
-    add_img(x_training, y_training, LOUVRE_TRAINING_32_arg_plus_plus_max, [-1, -1, 1, -1])
+    add_img(x_training, y_training, LOUVRE_TRAINING_32_classique_max, [-1, -1, 1, -1])
     print("img4")
-    add_img(x_training, y_training, PANTHEON_TRAINING_32_arg_plus_plus_max, [-1, -1, -1, 1])
+    add_img(x_training, y_training, PANTHEON_TRAINING_32_classique_max, [-1, -1, -1, 1])
     print("img5")
-    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING_32_arg_plus_plus_max, [1, -1, -1, -1])
+    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING_32_classique_max, [1, -1, -1, -1])
     print("img6")
-    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING_32_arg_plus_plus_max, [-1, 1, -1, -1])
+    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING_32_classique_max, [-1, 1, -1, -1])
     print("img7")
-    add_img(x_testing, y_testing, LOUVRE_TESTING_32_arg_plus_plus_max, [-1, -1, 1, -1])
+    add_img(x_testing, y_testing, LOUVRE_TESTING_32_classique_max, [-1, -1, 1, -1])
     print("img8")
-    add_img(x_testing, y_testing, PANTHEON_TESTING_32_arg_plus_plus_max, [-1, -1, -1, 1])
+    add_img(x_testing, y_testing, PANTHEON_TESTING_32_classique_max, [-1, -1, -1, 1])
 
     x_training = np.array(x_training)
     y_training = np.array(y_training)
@@ -568,9 +565,8 @@ if __name__ == '__main__':
 
     # Linear
     nb_iter = 10
-    iter = [100000]
-    learning_rate = [0.00001, 0.000005, 0.000001]
-    stat_data = []
+    iter = [1000]
+    learning_rate = [0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1]
     for it in iter:
         for LA in learning_rate:
             moy_res = [[], [], []]
@@ -596,16 +592,12 @@ if __name__ == '__main__':
             print(it, LA, statistics.mean(moy_res[0]), statistics.mean(moy_res[1]), statistics.mean(moy_res[2]),
                   statistics.pvariance(moy_res[1]), max(moy_res[0]), max(moy_res[1]), max(moy_res[0]) - max(moy_res[1]),
                   moy_res[1].index(max(moy_res[1])))
-            stat_data.append(
-                [it, LA, statistics.mean(moy_res[0]), statistics.mean(moy_res[1]), statistics.mean(moy_res[2]),
-                 statistics.pvariance(moy_res[1]), max(moy_res[0]), max(moy_res[1]), max(moy_res[0]) - max(moy_res[1]),
-                 moy_res[1].index(max(moy_res[1]))])
-    print(stat_data)
-    with open("D:/PA/models_save/linear_txt/32_arg_plus_plus_max.txt", "w") as filout:
-        for row in stat_data:
-            for wr in row:
-                filout.write(f"{str(wr)};")
-            filout.write(f"\n")
+            with open("D:/PA/models_save/linear_txt/32_classique_max-1000.txt", "a") as filout:
+                filout.write(
+                    f"{str(DS)};{str(it)};{str(LA)};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str(statistics.mean(moy_res[2]))}"
+                    f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
+                    f";{str(moy_res[1].index(max(moy_res[1])))}\n")
+
 
     # # MLP
     # my_dll = ct.CDLL(MLP_LIB)
