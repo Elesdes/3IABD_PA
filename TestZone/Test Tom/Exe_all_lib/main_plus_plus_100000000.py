@@ -568,8 +568,8 @@ if __name__ == '__main__':
 
     # Linear
     nb_iter = 10
-    iter = [10000]
-    learning_rate = [0.0001, 0.00005, 0.00001, 0.000005, 0.000001]
+    iter = [100000000]
+    learning_rate = [0.0001, 0.00001]
     stat_data = []
     for it in iter:
         for LA in learning_rate:
@@ -596,7 +596,7 @@ if __name__ == '__main__':
             print(it, LA, statistics.mean(moy_res[0]), statistics.mean(moy_res[1]), statistics.mean(moy_res[2]),
                   statistics.pvariance(moy_res[1]), max(moy_res[0]), max(moy_res[1]), max(moy_res[0]) - max(moy_res[1]),
                   moy_res[1].index(max(moy_res[1])))
-            with open("D:/PA/models_save/linear_txt/32_arg_plus_plus_max-10000.txt", "a") as filout:
+            with open("D:/PA/models_save/linear_txt/32_arg_plus_plus_max-100000000.txt", "a") as filout:
                 filout.write(f"{str(DS)};{str(it)};{str(LA)};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str( statistics.mean(moy_res[2]))}"
                              f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
                              f";{str(moy_res[1].index(max(moy_res[1])))}\n")

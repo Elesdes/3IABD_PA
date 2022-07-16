@@ -127,11 +127,8 @@ def add_img(x, y, file_path, value):
         f = os.path.join(file_path, filename)
         if os.path.isfile(f):
             img = Image.open(f)
-            img = img.convert('L')
             img = np.array(img)
             img = np.ravel(img)
-            # print(img)
-            # print(len(img))
             x.append(img)
             y.append(value)
 
@@ -484,7 +481,7 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
         if (verify == len(y_training[i])):
             final_result += 1
     print("Result : ", final_result, "/", len(y_training), " | ", final_result / len(y_training) * 100, "%")
-
+    res_trai = final_result / len(y_training) * 100
     # Set X
     C_TYPE_X = ct.c_double
     POINTER_C_TYPE_X = ct.POINTER(C_TYPE_X)
@@ -520,7 +517,7 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
         if (verify == len(y_testing[i])):
             final_result += 1
     print("Result : ", final_result, "/", len(y_testing), " | ", final_result / len(y_testing) * 100, "%")
-
+    res_test = final_result / len(y_testing) * 100
     # Save and destroy
     for i in range(len(w)):
         # May be change in the near future
@@ -529,7 +526,7 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
         my_dll.saveSVM(w[i], str_file, rowsWLen, ct.c_double((verify / len(y_testing) * 100)))
         my_dll.freeArr(w[i])
         my_dll.freeArr(derive[i])
-
+    return [res_trai, res_test]
 
 if __name__ == '__main__':
     print("--- Starting now ---")
@@ -543,63 +540,52 @@ if __name__ == '__main__':
     y_training = list()
     x_testing = list()
     y_testing = list()
-    DS = "32_arg_plus_plus_max"
+    DS = "32_classique_max"
     print("img1")
-    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING_32_arg_plus_plus_max, [1, -1, -1, -1])
+    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING_32_classique_max, [1, -1, -1, -1])
     print("img2")
-    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING_32_arg_plus_plus_max, [-1, 1, -1, -1])
+    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING_32_classique_max, [-1, 1, -1, -1])
     print("img3")
-    add_img(x_training, y_training, LOUVRE_TRAINING_32_arg_plus_plus_max, [-1, -1, 1, -1])
+    add_img(x_training, y_training, LOUVRE_TRAINING_32_classique_max, [-1, -1, 1, -1])
     print("img4")
-    add_img(x_training, y_training, PANTHEON_TRAINING_32_arg_plus_plus_max, [-1, -1, -1, 1])
+    add_img(x_training, y_training, PANTHEON_TRAINING_32_classique_max, [-1, -1, -1, 1])
     print("img5")
-    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING_32_arg_plus_plus_max, [1, -1, -1, -1])
+    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING_32_classique_max, [1, -1, -1, -1])
     print("img6")
-    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING_32_arg_plus_plus_max, [-1, 1, -1, -1])
+    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING_32_classique_max, [-1, 1, -1, -1])
     print("img7")
-    add_img(x_testing, y_testing, LOUVRE_TESTING_32_arg_plus_plus_max, [-1, -1, 1, -1])
+    add_img(x_testing, y_testing, LOUVRE_TESTING_32_classique_max, [-1, -1, 1, -1])
     print("img8")
-    add_img(x_testing, y_testing, PANTHEON_TESTING_32_arg_plus_plus_max, [-1, -1, -1, 1])
+    add_img(x_testing, y_testing, PANTHEON_TESTING_32_classique_max, [-1, -1, -1, 1])
 
     x_training = np.array(x_training)
     y_training = np.array(y_training)
     x_testing = np.array(x_testing)
     y_testing = np.array(y_testing)
 
-    # Linear
-    nb_iter = 10
-    iter = [10000000]
-    learning_rate = [0.0001, 0.00001]
-    stat_data = []
-    for it in iter:
-        for LA in learning_rate:
-            moy_res = [[], [], []]
-            LINEAR_SAVE__ = LINEAR_SAVE + f"DS{DS}-iter{it}-LR{LA}/"
-            for i in range(nb_iter):
-                LINEAR_SAVE_ = LINEAR_SAVE__ + f"num{i}/"
-                if not os.path.exists(LINEAR_SAVE_):
-                    os.makedirs(LINEAR_SAVE_)
 
-                print(f"\n--- Iteration {i} ---")
-                my_dll = ct.CDLL(LINEAR_LIB)
-                res = training_linear(my_dll, x_training, y_training, x_testing, y_testing, it, LA, LINEAR_SAVE_)
-                moy_res[0].append(res[0])
-                moy_res[1].append(res[1])
-                moy_res[2].append(res[0] - res[1])
-                print(f"Diférence entre les deux : {res[0] - res[1]}")
+    # Linear
+    limit = [10000000]
+    threshold = [0.5, 0.1, 0.01, 0.001, 0.0001, 0.00001]
+    learning_rate = [0.49, 0.09, 0.009, 0.0009, 0.00009, 0.000009]
+    for thr in threshold:
+        for LA in learning_rate:
+            LINEAR_SAVE__ = MLP_SAVE + f"DS{DS}-threshold{thr}-LR{LA}/"
+            if not os.path.exists(LINEAR_SAVE__):
+                os.makedirs(LINEAR_SAVE__)
+            my_dll = ct.CDLL(SVM_LIB)
+            res = training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_rate, thr, limit)
+            res_train = res[0]
+            res_test = res[1]
+            diff_res = res[0] - res[1]
+            print(f"Diférence entre les deux : {diff_res}")
 
             print("--- Stat ---")
-            print("moyenne des trainings :", statistics.mean(moy_res[0]))
-            print("moyenne des tests :", statistics.mean(moy_res[1]))
-            print("moyenne des differences :", statistics.mean(moy_res[2]))
-            print("la variance des train est de :", statistics.pvariance(moy_res[1]))
-            print(it, LA, statistics.mean(moy_res[0]), statistics.mean(moy_res[1]), statistics.mean(moy_res[2]),
-                  statistics.pvariance(moy_res[1]), max(moy_res[0]), max(moy_res[1]), max(moy_res[0]) - max(moy_res[1]),
-                  moy_res[1].index(max(moy_res[1])))
-            with open("D:/PA/models_save/linear_txt/32_arg_plus_plus_max-10000000.txt", "a") as filout:
-                filout.write(f"{str(DS)};{str(it)};{str(LA)};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str( statistics.mean(moy_res[2]))}"
-                             f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
-                             f";{str(moy_res[1].index(max(moy_res[1])))}\n")
+            print(thr, LA, res_train, res_test, diff_res)
+            with open("D:/PA/models_save/mlp_txt/32_classique_max.txt", "a") as filout:
+                filout.write(
+                    f"{str(DS)};{str(thr)};{str(LA)};{str(res_train)};{str(res_test)};{str(diff_res)}")
+
 
     # # MLP
     # my_dll = ct.CDLL(MLP_LIB)
