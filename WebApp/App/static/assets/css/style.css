@@ -1774,6 +1774,31 @@ ul.details-list li:last-child {
   background-size: cover;
 }
 
+.landing-eiffel {
+  background: url('../images/hero-bg/eiffel.jpg');
+  background-size: cover;
+}
+
+.landing-louvre {
+  background: url('../images/hero-bg/louvre.jpg');
+  background-size: cover;
+}
+
+.landing-pantheon {
+  background: url('../images/hero-bg/pantheon.jpg');
+  background-size: cover;
+}
+
+.landing-triumphal {
+  background: url('../images/hero-bg/triumphal.jpg');
+  background-size: cover;
+}
+
+.landing-no {
+  background: url('../images/hero-bg/no.jpg');
+  background-size: cover;
+}
+
 /*--------------------
   Features Section
 ----------------------*/
