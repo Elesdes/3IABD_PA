@@ -141,7 +141,7 @@ def request_from_choose():
                 elif guess == 3:
                     return render_template('pantheon.html')
                 else:
-                    render_template('not_asserted.html')
+                    return render_template('not_asserted.html')
             else:
                 flash('No choice selected')
                 return redirect(request.url)

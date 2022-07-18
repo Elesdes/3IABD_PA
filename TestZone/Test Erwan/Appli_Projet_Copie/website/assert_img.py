@@ -12,7 +12,7 @@ SVM_LIB = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/SVMLib/cmake-build-debug
 
 LINEAR_SAVE = ""
 MLP_SAVE = ""
-SVM_SAVE = ""
+SVM_SAVE = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/save/svm/DS32_classique-Test_max_1001-LA0.005-TH0.01/num0/"
 
 
 def prepare_dll_linear(my_dll):
@@ -121,23 +121,27 @@ def linear_assert(x):
     rowsWLen = colsXLen + 1
     my_dll = ct.CDLL(LINEAR_LIB)
     my_dll = prepare_dll_linear(my_dll)
+    number_of_file = 0
 
     # Beginning
     w = list()
     for filename in os.listdir(LINEAR_SAVE):
         f = os.path.join(LINEAR_SAVE, filename)
         # /!\ Allocated ptr list, needs to be free/destroy
-        w.append(my_dll.loadModelLinear(f))
+        file_binary = f.encode('ascii')
+        w.append(my_dll.loadModelLinear(file_binary))
+        number_of_file += 1
+
     result = list()
     verify = 0
-    # TODO: Trouver un moyen de rendre ça dynamique est un enfer
-    for iter_res in range(4):
+
+    for iter_res in range(number_of_file):
         result.append(my_dll.predictLinearModelClassificationInt(w[iter_res], ptr[0], rowsWLen))
-    for case_num in range(4):
+    for case_num in range(number_of_file):
         if (result[case_num] == -1):
             verify += 1
-    if (verify == 3):
-        for case_num in range(4):
+    if (verify == number_of_file - 1):
+        for case_num in range(number_of_file):
             if (result[case_num] == 1):
                 code_res = case_num
     else:
@@ -146,7 +150,6 @@ def linear_assert(x):
     for i in range(len(w)):
         # May be change in the near future
         my_dll.destroyFloatArray(w[i])
-
     return code_res
 
 
@@ -168,25 +171,28 @@ def MLP_assert(x):
     colsXLen = len(x)
     my_dll = ct.CDLL(MLP_LIB)
     my_dll = prepare_dll_mlp(my_dll)
+    number_of_file = 0
+    for filename in os.listdir(LINEAR_SAVE):
+        number_of_file += 1
 
     # Beginning
     for filename in os.listdir(MLP_SAVE):
         f = os.path.join(MLP_SAVE, filename)
         # /!\ Allocated ptr list, needs to be free/destroy
-        MLP = my_dll.loadModelMLP(f)
+        file_binary = f.encode('ascii')
+        MLP = my_dll.loadModelMLP(file_binary)
 
-    # TODO : à rendre dynamique
-    result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[0], 1, 4)
+    result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[0], 1, number_of_file)
     verify = 0
     code_res = -1
     res_list = list()
-    for iter_test in range(4):
+    for iter_test in range(number_of_file):
         res_list.append(my_dll.readArray(result, iter_test))
     for i in res_list:
         if i == -1:
             verify += 1
-    if verify == 3:
-        for case_num in range(4):
+    if verify == number_of_file - 1:
+        for case_num in range(number_of_file):
             if (result[case_num] == 1):
                 code_res = case_num
     else:
@@ -218,24 +224,25 @@ def SVM_assert(x):
 
     w = list()
     final_result = 0
-    # TODO : à rendre dynamique
+    number_of_file = 0
     for filename in os.listdir(SVM_SAVE):
         f = os.path.join(SVM_SAVE, filename)
         # /!\ Allocated ptr list, needs to be free/destroy
-        w.append(my_dll.loadSVM(f))
+        file_binary = f.encode('ascii')
+        w.append(my_dll.loadSVM(file_binary))
+        number_of_file += 1
 
     result = list()
     verify = 0
     code_res = -1
 
-    # TODO: Trouver un moyen de rendre ça dynamique est un enfer
-    for iter_res in range(4):
+    for iter_res in range(number_of_file):
         result.append(my_dll.resultSVM(ptr_x[0], w[iter_res], rowsXLen))
-    for case_num in range(4):
+    for case_num in range(number_of_file):
         if (result[case_num] == -1):
             verify += 1
-    if (verify == 3):
-        for case_num in range(4):
+    if (verify == number_of_file - 1):
+        for case_num in range(number_of_file):
             if (result[case_num] == 1):
                 code_res = case_num
     else:
@@ -272,6 +279,4 @@ def RBF_was_chosen(img):
 
 
 def SVM_was_chosen(img):
-    # TODO: a decommenter pour la prod
-    # return SVM_assert(img)
-    return 3
+    return SVM_assert(img)

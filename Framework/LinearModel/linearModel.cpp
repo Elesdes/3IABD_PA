@@ -142,10 +142,10 @@ DLLEXPORT void destroyIntArray2D(int **array, int lenOfNPL) {
             int gxk = predictLinearModelClassificationFloat(w, x[k], rowsWLen);
             int yk = y[k];
             int diff = yk - gxk;
-            w[0] = w[0] + 0.01 * diff * 1;
+            w[0] = w[0] + 0.001 * diff * 1;
             // W[1:] = W[1:] + 0.01 * diff * X[k]
             for (int j = 1; j < rowsWLen; j += 1) {
-                w[j] = w[j] + 0.01 * diff * x[k][j - 1];
+                w[j] = w[j] + 0.001 * diff * x[k][j - 1];
             }
         }
         return w;
@@ -156,10 +156,10 @@ DLLEXPORT void destroyIntArray2D(int **array, int lenOfNPL) {
             int gxk = predictLinearModelClassificationInt(w, x[k], rowsWLen);
             int yk = y[k];
             int diff = yk - gxk;
-            w[0] = w[0] + 0.01 * diff * 1;
+            w[0] = w[0] + 0.001 * diff * 1;
             // W[1:] = W[1:] + 0.01 * diff * X[k]
             for (int j = 1; j < rowsWLen; j += 1) {
-                w[j] = w[j] + 0.01 * diff * x[k][j - 1];
+                w[j] = w[j] + 0.001 * diff * x[k][j - 1];
             }
         }
         return w;

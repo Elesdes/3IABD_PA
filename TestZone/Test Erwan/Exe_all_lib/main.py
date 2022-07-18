@@ -1,6 +1,7 @@
 import ctypes as ct
 import os
 import sys
+import statistics
 
 import numpy as np
 from PIL import Image
@@ -9,24 +10,26 @@ LINEAR_LIB = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/LinearLib/cmake-build
 MLP_LIB = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/MLPLib/cmake-build-debug/MLPLib.dll"
 SVM_LIB = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/SVMLib/cmake-build-debug/SVMLib.dll"
 
-EIFFEL_TOWER_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/eiffel/training/"
-EIFFEL_TOWER_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/eiffel/testing/"
-TRIUMPHAL_ARC_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/triumphal/training/"
-TRIUMPHAL_ARC_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/triumphal/testing/"
-LOUVRE_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/louvre/training/"
-LOUVRE_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/louvre/testing/"
-PANTHEON_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/pantheon/training/"
-PANTHEON_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/datalake/pantheon/testing/"
+EIFFEL_TOWER_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/eiffel_tower/img_train/"
+EIFFEL_TOWER_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/eiffel_tower/img_test/"
+TRIUMPHAL_ARC_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/arc_de_triomphe/img_train/"
+TRIUMPHAL_ARC_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/arc_de_triomphe/img_test/"
+LOUVRE_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/louvre/img_train/"
+LOUVRE_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/louvre/img_test/"
+PANTHEON_TRAINING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/pantheon/img_train/"
+PANTHEON_TESTING = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Datalake/32/DS/max/pantheon/img_test/"
 
 LINEAR_SAVE = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/save/linear/"
 MLP_SAVE = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/save/mlp/"
 SVM_SAVE = "C:/Users/erwan/Desktop/ESGI/S6/Projet Annuel/Exe_all_lib/save/svm/"
+
 
 def add_img(x, y, file_path, value):
     for filename in os.listdir(file_path):
         f = os.path.join(file_path, filename)
         if os.path.isfile(f):
             img = Image.open(f)
+            img = img.convert('L')
             img = np.array(img)
             img = np.ravel(img)
             x.append(img)
@@ -303,6 +306,10 @@ def training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter
     print("--- Testing MLP ---")
     rowsXLen, colsXLen, rowsYLen, colsYlen, arr_type_y, len_npl = set_var_mlp(x_testing, y_testing, npl)
     final_result = 0
+    dict_res = {0: 0,
+                1: 0,
+                2: 0,
+                3: 0}
     for i in range(rowsXLen):
         result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[i], 1, len(y_testing[0]))
         verify = 0
@@ -315,9 +322,14 @@ def training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter
                 verify = verify + 1
         if verify == len(y_testing[0]):
             final_result += 1
+            for case_num in range(len(y_testing[0])):
+                if (res_list[case_num] > 0):
+                    dict_res[case_num] += 1
 
         my_dll.destroyDoubleArray1D(result)
     print("Result : ", final_result, "/", len(y_testing), " | ", final_result / len(y_testing) * 100, "%")
+    print("Tour Eiffel: ", str(dict_res[0]), " Arc de Triomphe: ", str(dict_res[1]), " Louvre: ", str(dict_res[2]),
+          " Pantheon: ", str(dict_res[3]))
     pourcentage = final_result / len(y_testing) * 100
 
     # May be change in the near future
@@ -327,7 +339,7 @@ def training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter
     my_dll.destroyMlpModel(MLP)
 
 
-def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_rate, threshold, limit):
+def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_rate, threshold, limit, SVM_SAVE):
     # Set X
     C_TYPE_X = ct.c_double
     POINTER_C_TYPE_X = ct.POINTER(C_TYPE_X)
@@ -370,7 +382,7 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
         if (verify == len(y_training[i])):
             final_result += 1
     print("Result : ", final_result, "/", len(y_training), " | ", final_result / len(y_training) * 100, "%")
-
+    res_trai = final_result / len(y_training) * 100
     # Set X
     C_TYPE_X = ct.c_double
     POINTER_C_TYPE_X = ct.POINTER(C_TYPE_X)
@@ -395,6 +407,10 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
     rowsXLen, colsXLen, rowsWLen, rowsYLen, colsYLen = set_var_svm(x_testing, y_testing)
     verify = 0
     final_result = 0
+    dict_res = {0 : 0,
+                1 : 0,
+                2 : 0,
+                3 : 0}
     for i in range(rowsYLen):
         result = list()
         verify = 0
@@ -405,8 +421,12 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
                 verify += 1
         if (verify == len(y_testing[i])):
             final_result += 1
+            for case_num in range(len(y_testing[0])):
+                if (result[case_num] == 1):
+                    dict_res[case_num] += 1
     print("Result : ", final_result, "/", len(y_testing), " | ", final_result / len(y_testing) * 100, "%")
-
+    print("Tour Eiffel: ", str(dict_res[0]), " Arc de Triomphe: ", str(dict_res[1]), " Louvre: ", str(dict_res[2]), " Pantheon: ", str(dict_res[3]))
+    res_test = final_result / len(y_testing) * 100
     # Save and destroy
     for i in range(len(w)):
         # May be change in the near future
@@ -415,6 +435,7 @@ def training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_
         my_dll.saveSVM(w[i], str_file, rowsWLen, ct.c_double((verify / len(y_testing) * 100)))
         my_dll.freeArr(w[i])
         my_dll.freeArr(derive[i])
+    return [res_trai, res_test]
 
 
 if __name__ == '__main__':
@@ -424,20 +445,20 @@ if __name__ == '__main__':
     y_training = list()
     x_testing = list()
     y_testing = list()
-    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING, [1, -1, -1, -1])
-    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING, [-1, 1, -1, -1])
-    add_img(x_training, y_training, LOUVRE_TRAINING, [-1, -1, 1, -1])
-    add_img(x_training, y_training, PANTHEON_TRAINING, [-1, -1, -1, 1])
-    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING, [1, -1, -1, -1])
-    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING, [-1, 1, -1, -1])
-    add_img(x_testing, y_testing, LOUVRE_TESTING, [-1, -1, 1, -1])
-    add_img(x_testing, y_testing, PANTHEON_TESTING, [-1, -1, -1, 1])
+    # add_img(x_training, y_training, EIFFEL_TOWER_TRAINING, [1, -1, -1, -1])
+    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING, [1, -1])
+    add_img(x_training, y_training, LOUVRE_TRAINING, [-1, 1])
+    # add_img(x_training, y_training, PANTHEON_TRAINING, [-1, -1, -1, 1])
+    # add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING, [1, -1, -1, -1])
+    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING, [1, -1])
+    add_img(x_testing, y_testing, LOUVRE_TESTING, [-1, 1])
+    # add_img(x_testing, y_testing, PANTHEON_TESTING, [-1, -1, -1, 1])
     
     x_training = np.array(x_training)
     y_training = np.array(y_training)
     x_testing = np.array(x_testing)
     y_testing = np.array(y_testing)
-
+    """
     # Linear
     my_dll = ct.CDLL(LINEAR_LIB)
     iter = 100000
@@ -452,10 +473,41 @@ if __name__ == '__main__':
     x_training = x_training.astype(float)
     x_testing = x_testing.astype(float)
     training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter, learning_rate)
-
+    """
     # SVM
-    my_dll = ct.CDLL(SVM_LIB)
-    learning_rate = 0.0005
-    threshold = 0.001
-    limit = 100000
-    training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_rate, threshold, limit)
+    # my_dll = ct.CDLL(SVM_LIB)
+    learning_rate = [0.5, 0.05, 0.005, 0.0005]
+    threshold = [1, 0.1, 0.01, 0.001]
+    limit = 3000
+    stat_data = []
+    DS = "32_classique-Test2img_max_3000"
+    for i, j in enumerate(learning_rate):
+        moy_res = [[], [], []]
+        SVM_SAVE__ = SVM_SAVE + f"DS{DS}-LA{learning_rate[i]}-TH{threshold[i]}/"
+
+        SVM_SAVE_ = SVM_SAVE__+ f"num{0}/"
+        if not os.path.exists(SVM_SAVE_):
+            os.makedirs(SVM_SAVE_)
+
+        print(f"\n--- Iteration {i} ---")
+        my_dll = ct.CDLL(SVM_LIB)
+        res = training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_rate[i], threshold[i], limit, SVM_SAVE_)
+        moy_res[0].append(res[0])
+        moy_res[1].append(res[1])
+        moy_res[2].append(res[0] - res[1])
+        print(f"Diférence entre les deux : {res[0] - res[1]}")
+        # training_SVM(my_dll, x_training, y_training, x_testing, y_testing, learning_rate[i], threshold[i], limit)
+        print("--- Stat ---")
+        print("moyenne des trainings :", statistics.mean(moy_res[0]))
+        print("moyenne des tests :", statistics.mean(moy_res[1]))
+        print("moyenne des differences :", statistics.mean(moy_res[2]))
+        print("la variance des train est de :", statistics.pvariance(moy_res[1]))
+        print(learning_rate[i], threshold[i], statistics.mean(moy_res[0]), statistics.mean(moy_res[1]), statistics.mean(moy_res[2]),
+              statistics.pvariance(moy_res[1]), max(moy_res[0]), max(moy_res[1]), max(moy_res[0]) - max(moy_res[1]),
+              moy_res[1].index(max(moy_res[1])))
+
+        #with open("D:/PA/models_save/linear_txt/32_arg_plus_plus_max.txt", "a") as filout:
+        #    filout.write(
+        #        f"{str(DS)};{str(learning_rate[i])};{str(threshold[i])};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str(statistics.mean(moy_res[2]))}"
+        #        f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
+        #        f";{str(moy_res[1].index(max(moy_res[1])))}\n")
