@@ -9,163 +9,115 @@ from PIL.Image import Image
 # _32_classique_max
 from tqdm import tqdm
 
-EIFFEL_TOWER_training_classification()
-_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/eiffel_tower/img_train/"
+EIFFEL_TOWER_TRAINING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/eiffel_tower/img_train/"
 EIFFEL_TOWER_TESTING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/eiffel_tower/img_test/"
-TRIUMPHAL_ARC_training_classification()
-_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/arc_de_triomphe/img_train/"
+TRIUMPHAL_ARC_TRAINING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/arc_de_triomphe/img_train/"
 TRIUMPHAL_ARC_TESTING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/arc_de_triomphe/img_test/"
-LOUVRE_training_classification()
-_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/louvre/img_train/"
+LOUVRE_TRAINING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/louvre/img_train/"
 LOUVRE_TESTING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/louvre/img_test/"
-PANTHEON_training_classification()
-_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/pantheon/img_train/"
+PANTHEON_TRAINING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/pantheon/img_train/"
 PANTHEON_TESTING_32_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/max/pantheon/img_test/"
 # _32_arg_plus_max
-EIFFEL_TOWER_training_classification()
-_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/eiffel_tower/img_train_arg+_32/"
+EIFFEL_TOWER_TRAINING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/eiffel_tower/img_train_arg+_32/"
 EIFFEL_TOWER_TESTING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/eiffel_tower/img_test_arg+_32/"
-TRIUMPHAL_ARC_training_classification()
-_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/arc_de_triomphe/img_train_arg+_32/"
+TRIUMPHAL_ARC_TRAINING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/arc_de_triomphe/img_train_arg+_32/"
 TRIUMPHAL_ARC_TESTING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/arc_de_triomphe/img_test_arg+_32/"
-LOUVRE_training_classification()
-_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/louvre/img_train_arg+_32/"
+LOUVRE_TRAINING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/louvre/img_train_arg+_32/"
 LOUVRE_TESTING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/louvre/img_test_arg+_32/"
-PANTHEON_training_classification()
-_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/pantheon/img_train_arg+_32/"
+PANTHEON_TRAINING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/pantheon/img_train_arg+_32/"
 PANTHEON_TESTING_32_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/max/pantheon/img_test_arg+_32/"
 # _32_arg_plus_plus_max
-EIFFEL_TOWER_training_classification()
-_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/eiffel_tower/img_train_arg++_32/"
+EIFFEL_TOWER_TRAINING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/eiffel_tower/img_train_arg++_32/"
 EIFFEL_TOWER_TESTING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/eiffel_tower/img_test_arg++_32/"
-TRIUMPHAL_ARC_training_classification()
-_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/arc_de_triomphe/img_train_arg++_32/"
+TRIUMPHAL_ARC_TRAINING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/arc_de_triomphe/img_train_arg++_32/"
 TRIUMPHAL_ARC_TESTING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/arc_de_triomphe/img_test_arg++_32/"
-LOUVRE_training_classification()
-_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/louvre/img_train_arg++_32/"
+LOUVRE_TRAINING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/louvre/img_train_arg++_32/"
 LOUVRE_TESTING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/louvre/img_test_arg++_32/"
-PANTHEON_training_classification()
-_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/pantheon/img_train_arg++_32/"
+PANTHEON_TRAINING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/pantheon/img_train_arg++_32/"
 PANTHEON_TESTING_32_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/max/pantheon/img_test_arg++_32/"
 
 # _64_classique_max
-EIFFEL_TOWER_training_classification()
-_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/eiffel_tower/64_img_train/"
+EIFFEL_TOWER_TRAINING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/eiffel_tower/64_img_train/"
 EIFFEL_TOWER_TESTING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/eiffel_tower/64_img_train/"
-TRIUMPHAL_ARC_training_classification()
-_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/arc_de_triomphe/64_img_train/"
+TRIUMPHAL_ARC_TRAINING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/arc_de_triomphe/64_img_train/"
 TRIUMPHAL_ARC_TESTING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/arc_de_triomphe/64_img_train/"
-LOUVRE_training_classification()
-_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/louvre/64_img_train/"
+LOUVRE_TRAINING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/louvre/64_img_train/"
 LOUVRE_TESTING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/louvre/64_img_train/"
-PANTHEON_training_classification()
-_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/pantheon/64_img_train/"
+PANTHEON_TRAINING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/pantheon/64_img_train/"
 PANTHEON_TESTING_64_classique_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/max/pantheon/64_img_train/"
 # _64_arg_plus_max
-EIFFEL_TOWER_training_classification()
-_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/eiffel_tower/img_train_arg+_64/"
+EIFFEL_TOWER_TRAINING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/eiffel_tower/img_train_arg+_64/"
 EIFFEL_TOWER_TESTING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/eiffel_tower/img_test_arg+_64/"
-TRIUMPHAL_ARC_training_classification()
-_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/arc_de_triomphe/img_train_arg+_64/"
+TRIUMPHAL_ARC_TRAINING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/arc_de_triomphe/img_train_arg+_64/"
 TRIUMPHAL_ARC_TESTING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/arc_de_triomphe/img_test_arg+_64/"
-LOUVRE_training_classification()
-_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/louvre/img_train_arg+_64/"
+LOUVRE_TRAINING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/louvre/img_train_arg+_64/"
 LOUVRE_TESTING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/louvre/img_test_arg+_64/"
-PANTHEON_training_classification()
-_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/pantheon/img_train_arg+_64/"
+PANTHEON_TRAINING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/pantheon/img_train_arg+_64/"
 PANTHEON_TESTING_64_arg_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/max/pantheon/img_test_arg+_64/"
 # _64_arg_plus_plus_max
-EIFFEL_TOWER_training_classification()
-_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/eiffel_tower/img_train_arg++_64/"
+EIFFEL_TOWER_TRAINING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/eiffel_tower/img_train_arg++_64/"
 EIFFEL_TOWER_TESTING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/eiffel_tower/img_test_arg++_64/"
-TRIUMPHAL_ARC_training_classification()
-_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/arc_de_triomphe/img_train_arg++_64/"
+TRIUMPHAL_ARC_TRAINING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/arc_de_triomphe/img_train_arg++_64/"
 TRIUMPHAL_ARC_TESTING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/arc_de_triomphe/img_test_arg++_64/"
-LOUVRE_training_classification()
-_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/louvre/img_train_arg++_64/"
+LOUVRE_TRAINING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/louvre/img_train_arg++_64/"
 LOUVRE_TESTING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/louvre/img_test_arg++_64/"
-PANTHEON_training_classification()
-_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/pantheon/img_train_arg++_64/"
+PANTHEON_TRAINING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/pantheon/img_train_arg++_64/"
 PANTHEON_TESTING_64_arg_plus_plus_max = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/max/pantheon/img_test_arg++_64/"
 
 # 32_classique_min
-EIFFEL_TOWER_training_classification()
-_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/eiffel_tower/img_train/"
+EIFFEL_TOWER_TRAINING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/eiffel_tower/img_train/"
 EIFFEL_TOWER_TESTING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/eiffel_tower/img_test/"
-TRIUMPHAL_ARC_training_classification()
-_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/arc_de_triomphe/img_train/"
+TRIUMPHAL_ARC_TRAINING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/arc_de_triomphe/img_train/"
 TRIUMPHAL_ARC_TESTING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/arc_de_triomphe/img_test/"
-LOUVRE_training_classification()
-_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/louvre/img_train/"
+LOUVRE_TRAINING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/louvre/img_train/"
 LOUVRE_TESTING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/louvre/img_test/"
-PANTHEON_training_classification()
-_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/pantheon/img_train/"
+PANTHEON_TRAINING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/pantheon/img_train/"
 PANTHEON_TESTING_32_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS/min/pantheon/img_test/"
 # _32_arg_plus_min
-EIFFEL_TOWER_training_classification()
-_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/eiffel_tower/img_train_arg+_32/"
+EIFFEL_TOWER_TRAINING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/eiffel_tower/img_train_arg+_32/"
 EIFFEL_TOWER_TESTING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/eiffel_tower/img_test_arg+_32/"
-TRIUMPHAL_ARC_training_classification()
-_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/arc_de_triomphe/img_train_arg+_32/"
+TRIUMPHAL_ARC_TRAINING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/arc_de_triomphe/img_train_arg+_32/"
 TRIUMPHAL_ARC_TESTING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/arc_de_triomphe/img_test_arg+_32/"
-LOUVRE_training_classification()
-_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/louvre/img_train_arg+_32/"
+LOUVRE_TRAINING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/louvre/img_train_arg+_32/"
 LOUVRE_TESTING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/louvre/img_test_arg+_32/"
-PANTHEON_training_classification()
-_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/pantheon/img_train_arg+_32/"
+PANTHEON_TRAINING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/pantheon/img_train_arg+_32/"
 PANTHEON_TESTING_32_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS+aug/min/pantheon/img_test_arg+_32/"
 # _32_arg_plus_plus_min
-EIFFEL_TOWER_training_classification()
-_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/eiffel_tower/img_train_arg++_32/"
+EIFFEL_TOWER_TRAINING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/eiffel_tower/img_train_arg++_32/"
 EIFFEL_TOWER_TESTING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/eiffel_tower/img_test_arg++_32/"
-TRIUMPHAL_ARC_training_classification()
-_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/arc_de_triomphe/img_train_arg++_32/"
+TRIUMPHAL_ARC_TRAINING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/arc_de_triomphe/img_train_arg++_32/"
 TRIUMPHAL_ARC_TESTING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/arc_de_triomphe/img_test_arg++_32/"
-LOUVRE_training_classification()
-_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/louvre/img_train_arg++_32/"
+LOUVRE_TRAINING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/louvre/img_train_arg++_32/"
 LOUVRE_TESTING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/louvre/img_test_arg++_32/"
-PANTHEON_training_classification()
-_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/pantheon/img_train_arg++_32/"
+PANTHEON_TRAINING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/pantheon/img_train_arg++_32/"
 PANTHEON_TESTING_32_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/32/DS++aug/min/pantheon/img_test_arg++_32/"
 
 # 64_classique_min
-EIFFEL_TOWER_training_classification()
-_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/eiffel_tower/64_img_train/"
+EIFFEL_TOWER_TRAINING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/eiffel_tower/64_img_train/"
 EIFFEL_TOWER_TESTING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/eiffel_tower/64_img_train/"
-TRIUMPHAL_ARC_training_classification()
-_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/arc_de_triomphe/64_img_train/"
+TRIUMPHAL_ARC_TRAINING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/arc_de_triomphe/64_img_train/"
 TRIUMPHAL_ARC_TESTING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/arc_de_triomphe/64_img_train/"
-LOUVRE_training_classification()
-_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/louvre/64_img_train/"
+LOUVRE_TRAINING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/louvre/64_img_train/"
 LOUVRE_TESTING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/louvre/64_img_train/"
-PANTHEON_training_classification()
-_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/pantheon/64_img_train/"
+PANTHEON_TRAINING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/pantheon/64_img_train/"
 PANTHEON_TESTING_64_classique_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS/min/pantheon/64_img_train/"
 # _64_arg_plus_min
-EIFFEL_TOWER_training_classification()
-_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/eiffel_tower/img_train_arg+_64/"
+EIFFEL_TOWER_TRAINING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/eiffel_tower/img_train_arg+_64/"
 EIFFEL_TOWER_TESTING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/eiffel_tower/img_test_arg+_64/"
-TRIUMPHAL_ARC_training_classification()
-_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/arc_de_triomphe/img_train_arg+_64/"
+TRIUMPHAL_ARC_TRAINING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/arc_de_triomphe/img_train_arg+_64/"
 TRIUMPHAL_ARC_TESTING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/arc_de_triomphe/img_test_arg+_64/"
-LOUVRE_training_classification()
-_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/louvre/img_train_arg+_64/"
+LOUVRE_TRAINING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/louvre/img_train_arg+_64/"
 LOUVRE_TESTING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/louvre/img_test_arg+_64/"
-PANTHEON_training_classification()
-_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/pantheon/img_train_arg+_64/"
+PANTHEON_TRAINING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/pantheon/img_train_arg+_64/"
 PANTHEON_TESTING_64_arg_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS+aug/min/pantheon/img_test_arg+_64/"
 # _64_arg_plus_plus_min
-EIFFEL_TOWER_training_classification()
-_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/eiffel_tower/img_train_arg++_64/"
+EIFFEL_TOWER_TRAINING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/eiffel_tower/img_train_arg++_64/"
 EIFFEL_TOWER_TESTING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/eiffel_tower/img_test_arg++_64/"
-TRIUMPHAL_ARC_training_classification()
-_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/arc_de_triomphe/img_train_arg++_64/"
+TRIUMPHAL_ARC_TRAINING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/arc_de_triomphe/img_train_arg++_64/"
 TRIUMPHAL_ARC_TESTING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/arc_de_triomphe/img_test_arg++_64/"
-LOUVRE_training_classification()
-_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/louvre/img_train_arg++_64/"
+LOUVRE_TRAINING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/louvre/img_train_arg++_64/"
 LOUVRE_TESTING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/louvre/img_test_arg++_64/"
-PANTHEON_training_classification()
-_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/pantheon/img_train_arg++_64/"
+PANTHEON_TRAINING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/pantheon/img_train_arg++_64/"
 PANTHEON_TESTING_64_arg_plus_plus_min = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/CompleteDataSet/DS complet_v2/64/DS++aug/min/pantheon/img_test_arg++_64/"
 
 IMAGES_TEST = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/Dataset/DS complet_v2/Tests"
@@ -199,14 +151,12 @@ def init_dll(rbf_lib: ct.CDLL) -> ct.CDLL:
                                    ct.c_int32, ct.c_int32]
     rbf_lib.newWeights.restype = ct.POINTER(ct.POINTER(ct.c_float))
 
-    rbf_lib.training_classification()
-    Classification.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                               ct.c_int32, ct.c_int32]
-    rbf_lib.training_classification()
-    Classification.restype = ct.POINTER(ct.POINTER(ct.c_float))
+    rbf_lib.trainingClassification.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                                               ct.c_int32, ct.c_int32]
+    rbf_lib.trainingClassification.restype = ct.POINTER(ct.POINTER(ct.c_float))
 
     return rbf_lib
 
@@ -297,12 +247,15 @@ def training_classification(rbf: ct.CDLL,
     inputs = convert_array(y)
     weights = rbf.initModelWeights(len(y), len(y[0]))
 
-    print("--- training_classification() ---")
-    w_trained = rbf.trainingClassification(centers, len(x), len(x[0]),
-                                           centers, len(x), len(x[0]),
-                                           inputs, len(y), len(y[0]),
-                                           weights, len(y), len(y[0]),
-                                           gamma, n_iter)
+    print(x)
+    print(np.shape(x)[0], np.shape(x)[1])
+
+    print("--- TRAINING---")
+    w_trained = rbf.newWeights(centers, len(x), len(x[0]),
+                               centers, len(x), len(x[0]),
+                               inputs, len(y), len(y[0]),
+                               weights, len(y), len(y[0]),
+                               gamma, n_iter)
 
     return w_trained, len(y), len(y[0])
 
@@ -312,8 +265,8 @@ if __name__ == '__main__':
 
     RBF_SAVE = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/Save/RBF/Classification"
 
-    """DS_TYPE = "_32_classique_min"
-    DS_TRAIN = ["EIFFEL_TOWER_training_classification()", "TRIUMPHAL_ARC_training_classification()", "LOUVRE_training_classification()", "PANTHEON_training_classification()"]
+    DS_TYPE = "_32_classique_min"
+    DS_TRAIN = ["EIFFEL_TOWER_TRAINING", "TRIUMPHAL_ARC_TRAINING", "LOUVRE_TRAINING", "PANTHEON_TRAINING"]
     DS_TEST = ["EIFFEL_TOWER_TESTING", "TRIUMPHAL_ARC_TESTING", "LOUVRE_TESTING", "PANTHEON_TESTING"]
     OUT = [[1, -1, -1, -1],
            [-1, 1, -1, -1],
@@ -321,8 +274,8 @@ if __name__ == '__main__':
            [-1, -1, -1, 1]]
 
     # Retrieve img
-    x_training_classification() = []
-    y_training_classification() = []
+    x_training = []
+    y_training = []
     x_testing = []
     y_testing = []
     x_test = []
@@ -330,14 +283,14 @@ if __name__ == '__main__':
 
     for i in range(len(DS_TRAIN)):
         print(f"Set {DS_TYPE}_{DS_TRAIN[i]} loaded")
-        add_img(x_training_classification(), y_training_classification(), globals()[DS_TRAIN[i] + DS_TYPE], OUT[i])
+        add_img(x_training, y_training, globals()[DS_TRAIN[i] + DS_TYPE], OUT[i])
         print(f"Set {DS_TYPE}_{DS_TEST[i]} loaded")
         add_img(x_testing, y_testing, globals()[DS_TEST[i] + DS_TYPE], OUT[i])
 
-    x_training_classification() = np.array(x_training_classification())
-    y_training_classification() = np.array(y_training_classification())
+    x_TRAINING = np.array(x_training)
+    y_TRAINING = np.array(y_training)
     x_testing = np.array(x_testing)
-    y_testing = np.array(y_testing)"""
+    y_testing = np.array(y_testing)
 
     rbf_lib = ct.CDLL(RBF_LIB_PATH)
     rbf = init_dll(rbf_lib)
@@ -345,27 +298,35 @@ if __name__ == '__main__':
     n_iter = 100
     gamma = 2
 
-    x = [[1],
-         [2],
-         [3]]
-    y = [2,
-         3,
-         2.5]
+    x = [1, 2,
+         2, 3,
+         3, 3,
+         2.5, 3]
+    y = [[1],
+         [-1],
+         [-1],
+         [1]]
 
     """img_to_test = []
     bin = []
     add_img(img_to_test,
             bin,
             "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/Dataset/DS complet_v2/Test",
-            0)
+            0)"""
 
-    # weights, n_rows_weights, n_cols_weights, res = training_classification()(rbf,
-    #                                                        x_training_classification(), y_training_classification(),
-    #                                                        gamma, n_iter)
+    weights, n_rows_weights, n_cols_weights, res = training_classification(rbf,
+                                                                           x_training, y_training,
+                                                                           gamma, n_iter)
     # save(rbf, weights, n_rows_weights, n_cols_weights,
     #     f"{RBF_SAVE}/{DS_TYPE}_num_iter{n_iter}", res)
-    testing(rbf,
+    """testing(rbf,
             "C:\\Users\\juanm\\OneDrive\\Bureau\\ESGI - Projets\\3IABD\\Projet Annuel\\Save\\RBF\\Classification\\test.txt",
             img_to_test,
             1, 4,
-            2, 1)"""
+            2, 1)
+    
+    
+        weights, n_rows_weights, n_cols_weights, res = training_classification(rbf,
+                                                                               x, y,
+                                                                               gamma, n_iter)
+"""

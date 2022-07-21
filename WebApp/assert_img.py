@@ -2,13 +2,15 @@ import ctypes as ct
 import os
 from typing import Any
 
-FRAMEWORK_LIB = "WebApp/cmake-build-debug/libWebApp.dll"
+import numpy as np
 
-LINEAR_SAVE = "WebApp/Save/Linear"
-MLP_SAVE = "WebApp/Save/MLP"
-RBF_SAVE = "WebApp/Save/RBF/Classification"
-SVM_SAVE = "WebApp/Save/SVM"
+FRAMEWORK_LIB = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/WebApp/cmake-build-debug/libWebApp.dll"
+#FRAMEWORK_LIB = "testing.d"
 
+LINEAR_SAVE = "Save/Linear"
+MLP_SAVE = "Save/MLP"
+RBF_SAVE = "Save/RBF/Classification/test.txt"
+SVM_SAVE = "Save/SVM"
 
 """def prepare_dll_linear(my_dll):
     my_dll.initModelWeights.argtypes = [ct.c_int32]
@@ -94,6 +96,7 @@ def prepare_dll_SVM(my_dll):
 
     return my_dll"""
 
+
 # Initialize dll for C++ / Python Interop
 def init_dll(lib: ct.CDLL) -> ct.CDLL:
     # Linear
@@ -102,21 +105,36 @@ def init_dll(lib: ct.CDLL) -> ct.CDLL:
 
     lib.loadModelLinear.argtypes = [ct.c_char_p]
     lib.loadModelLinear.restype = ct.POINTER(ct.c_float)
+
+    lib.destroyFloatArray.argtypes = [ct.POINTER(ct.c_float)]
+    lib.destroyFloatArray.restype = None
     # MLP
+    lib.destroyMlpModel.argtypes = [ct.c_void_p]
+    lib.destroyMlpModel.restype = None
+
+    lib.destroyDoubleArray1D.argtypes = [ct.POINTER(ct.c_double)]
+    lib.destroyDoubleArray1D.restype = None
+
     lib.predictMLPFloatMultipleOutputs.argtypes = [ct.c_void_p, ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32]
     lib.predictMLPFloatMultipleOutputs.restype = ct.POINTER(ct.c_double)
 
     lib.loadModelMLP.argtypes = [ct.c_char_p]
     lib.loadModelMLP.restype = ct.c_void_p
+
+    lib.readArray.argtypes = [ct.POINTER(ct.c_double), ct.c_int32]
+    lib.readArray.restype = ct.c_double
     # RBF
     lib.loadModelRBF.argtypes = [ct.POINTER(ct.c_char), ct.c_int32]
     lib.loadModelRBF.restype = ct.POINTER(ct.POINTER(ct.c_float))
 
-    lib.newWeights.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                                   ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                                   ct.c_int32, ct.c_int32]
-    lib.newWeights.restype = ct.POINTER(ct.POINTER(ct.c_float))
+    lib.newRBFWeights.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                               ct.c_int32, ct.c_int32]
+    lib.newRBFWeights.restype = ct.POINTER(ct.POINTER(ct.c_float))
     # SVM
+    lib.freeArr.argtypes = [ct.POINTER(ct.c_double)]
+    lib.freeArr.restype = None
+
     lib.loadSVM.argtypes = [ct.c_char_p]
     lib.loadSVM.restype = ct.POINTER(ct.c_double)
 
@@ -197,34 +215,33 @@ def MLP_assert(x):
     colsXLen = len(x)
     my_dll = ct.CDLL(FRAMEWORK_LIB)
     my_dll = init_dll(my_dll)
-    number_of_file = 0
-    for filename in os.listdir(LINEAR_SAVE):
-        number_of_file += 1
 
     # Beginning
-    for filename in os.listdir(MLP_SAVE):
-        f = os.path.join(MLP_SAVE, filename)
-        # /!/ Allocated ptr list, needs to be free/destroy
-        file_binary = f.encode('ascii')
-        MLP = my_dll.loadModelMLP(file_binary)
+    # /!/ Allocated ptr list, needs to be free/destroy
+    file_binary = MLP_SAVE.encode('ascii')
+    MLP = my_dll.loadModelMLP(file_binary)
 
-    result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[0], 1, number_of_file)
+    result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[0], 1, 1)
     verify = 0
     code_res = -1
     res_list = list()
-    for iter_test in range(number_of_file):
+    for iter_test in range(1):
         res_list.append(my_dll.readArray(result, iter_test))
     for i in res_list:
         if i == -1:
             verify += 1
-    if verify == number_of_file - 1:
-        for case_num in range(number_of_file):
+    if verify == 0:
+        for case_num in range(1):
             if (result[case_num] == 1):
                 code_res = case_num
     else:
         code_res = -1
+
+    print("oui")
     my_dll.destroyDoubleArray1D(result)
+    print("non")
     my_dll.destroyMlpModel(MLP)
+    print("PA")
 
     return code_res
 
@@ -251,23 +268,26 @@ def convert_array(array_input: Any) -> Any:
 
 
 def RBF_assert(x):
-    framework_lib = init_dll(FRAMEWORK_LIB)
-    framework = ct.CDLL(framework_lib)
+    rbf_lib = ct.CDLL(FRAMEWORK_LIB)
+    rbf = init_dll(rbf_lib)
+
+    new_x = []
+    new_x.append(x.astype(int))
+    new_x = np.array(new_x)
 
     valid = 0
     binary_file = RBF_SAVE.encode('ascii')
-    centers_testing = convert_array(x)
-    weights = framework.loadModelRBF(binary_file, 4)
+    centers_testing = convert_array(new_x)
+    weights = rbf.loadModelRBF(binary_file, 4)
 
     outputs = [[1, -1, -1, -1],
                [-1, 1, -1, -1],
                [-1, -1, 1, -1],
                [-1, -1, -1, 1]]
 
-    print("--- Testing ---")
-    res = framework.newWeights(weights, 1, 4,
-                               centers_testing, len(x), len(x[0]),
-                               2, 1)
+    res = rbf.newRBFWeights(weights, 1, 4,
+                         centers_testing, len(new_x), len(new_x[0]),
+                         2, 1)
 
     for i in range(0, len(outputs)):
         for j in range(0, 4):
@@ -275,8 +295,7 @@ def RBF_assert(x):
                 valid += 1
                 if valid == 4:
                     return i;
-            else:
-                valid = 0
+            valid = 0
     if valid < 4:
         return -1
 

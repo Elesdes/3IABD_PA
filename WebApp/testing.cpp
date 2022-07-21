@@ -1,19 +1,21 @@
-#if WIN32
-#define DLLEXPORT __declspec(dllexport)
-#elif
 #define DLLEXPORT
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 
 #include <cstdint>
 #include <iostream>
 #include <random>
 #include <iomanip>
 
-#include "Eigen/Dense"
+#if defined __GNUC__ || defined __APPLE__
+
+#include <Eigen/Dense>
+
+#else
+#include <eigen3/Eigen/Dense>
+#endif
+
 
 using namespace std;
 using namespace Eigen;
@@ -102,7 +104,7 @@ DLLEXPORT float **loadModelRBF(char *filePath, int32_t numDataset) {
             weights(i, j) = w[i];
             i += 1;
         }
-    } while(w[i] != NULL);
+    } while (w[i] != NULL);
 
     return fromEigenMatrixToPointer(weights, lenModel, numDataset);
 }
@@ -162,7 +164,7 @@ DLLEXPORT float **newRBFWeights(float **arrayWeights, int32_t nRowsW, int32_t nC
     newWeights.resize(nRowsW, nColsW);
     for (int i = 0; i < newWeights.rows(); i += 1) {
         MatrixXf inputs = rowMatrix(centers, i);
-        for(int j = 0; j < newWeights.cols(); j += 1) {
+        for (int j = 0; j < newWeights.cols(); j += 1) {
             newWeights(i, j) = predictRBFModel(weights, centers, inputs, gamma, mode);
         }
     }
@@ -235,7 +237,186 @@ DLLEXPORT int32_t predictLinearModelClassificationInt(float *modelWeights, int32
     return -1;
 }
 
+DLLEXPORT void destroyFloatArray(float *array) {
+    delete[] array;
+}
+
 // MLP
+DLLEXPORT void destroyDoubleArray3D(double ***array, int32_t *npl, int32_t lenOfNPL) {
+    for (int firstIter = 0; firstIter < lenOfNPL; firstIter++) {
+        for (int secondIter = 0; secondIter < npl[firstIter - 1] + 1; secondIter++) {
+            delete[] array[firstIter][secondIter];//deletes an inner array of integer;
+        }
+        delete[] array[firstIter];
+    }
+    delete[] array;
+}
+
+DLLEXPORT void destroyDoubleArray2D(double **array, int32_t lenOfNPL) {
+    for (int firstIter = 0; firstIter < lenOfNPL; firstIter++) {
+        delete[] array[firstIter];
+    }
+    delete[] array;
+}
+
+DLLEXPORT void destroyMlpModel(struct MLP *model) {
+    printf("OUi");
+    destroyDoubleArray2D(model->X, model->L);
+    printf("Non");
+    destroyDoubleArray2D(model->deltas, model->L + 1);
+    printf("PA");
+    destroyDoubleArray3D(model->W, model->d, model->L + 1);
+    printf("PE");
+    delete[] model->d;
+    printf("EUH");
+    delete (model);
+    printf("FUCK");
+}
+
+DLLEXPORT void destroyDoubleArray1D(double *array){
+    delete[] array;
+}
+
+DLLEXPORT MLP *initiateMLP(int32_t *npl, int32_t lenOfD) {
+    MLP *mlp = new MLP();
+    using std::cout;
+    using std::endl;
+    using std::setprecision;
+
+    std::random_device rd;
+    std::default_random_engine e;
+    std::uniform_real_distribution<> dis(-1, 1);
+
+    double ***tabW = new double **[lenOfD];
+    double **tabX = new double *[lenOfD];
+    double **tabDeltas = new double *[lenOfD];
+    int *tabNPL = new int[lenOfD];
+
+    for (int i = 0; i < lenOfD; i++) {
+        if (i == 0) {
+            tabW[i] = new double *[0];
+        } else {
+            tabW[i] = new double *[npl[i - 1] + 1];
+            for (int j = 0; j < npl[i - 1] + 1; j++) {
+                tabW[i][j] = new double[npl[i] + 1];
+                for (int k = 0; k < npl[i] + 1; k++) {
+                    if (k == 0) {
+                        tabW[i][j][k] = 0;
+                    } else {
+                        //dis(e)
+                        tabW[i][j][k] = double(dis(e));
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < lenOfD; i++) {
+        tabX[i] = new double[npl[i] + 1];
+        tabDeltas[i] = new double[npl[i] + 1];
+        for (int j = 0; j < npl[i] + 1; j++) {
+            if (j == 0) {
+                tabX[i][j] = 1.0;
+            } else {
+                tabX[i][j] = 0.0;
+            }
+            tabDeltas[i][j] = 0.0;
+        }
+    }
+
+    for (int i = 0; i < lenOfD; i++) {
+        tabNPL[i] = npl[i];
+    }
+
+    mlp->L = lenOfD - 1;
+    mlp->d = tabNPL;
+    mlp->W = tabW;
+    mlp->X = tabX;
+    mlp->deltas = tabDeltas;
+
+    return mlp;
+}
+
+DLLEXPORT MLP *loadModelMLP(char *filePath) {
+    int lenModel;
+    int *model;
+    double temp;
+    FILE *fp = fopen(filePath, "r");
+    //init l and d and the model itself
+    if (fp != NULL) {
+        char *tempSentence = "-- Efficiency --\n";
+        char *sentence = "-- L --\n";
+        char *sentence2 = "-- d --\n";
+        double temp;
+        char text[2000];
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, tempSentence)) != NULL) {
+                fscanf(fp, "%lf\n", &temp);
+            }
+            if ((strstr(text, sentence)) != NULL) {
+                fscanf(fp, "%d\n", &lenModel);
+                lenModel += 1;
+            }
+            if ((strstr(text, sentence2)) != NULL) {
+                model = new int[lenModel];
+                for (int i = 0; i < lenModel; i++) {
+                    fscanf(fp, "{%d}\n", &model[i]);
+                }
+            }
+
+        }
+        MLP *mlp = initiateMLP(model, lenModel);
+
+        // set W
+        fseek(fp, 0, SEEK_SET);
+        sentence = "-- W --\n";
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, sentence)) != NULL) {
+                for (int i = 0; i < mlp->L + 1; i++) {
+                    for (int j = 0; j < mlp->d[i - 1] + 1; j++) {
+                        for (int k = 0; k < mlp->d[i] + 1; k++) {
+                            fscanf(fp, "{%lf}\n", &mlp->W[i][j][k]);
+                        }
+                    }
+                }
+            }
+        }
+        // set X
+        fseek(fp, 0, SEEK_SET);
+        sentence = "-- X --\n";
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, sentence)) != NULL) {
+                for (int i = 0; i < mlp->L + 1; i++) {
+                    for (int j = 0; j < mlp->d[i] + 1; j++) {
+                        fscanf(fp, "{%lf}\n", &mlp->X[i][j]);
+                    }
+                }
+            }
+        }
+
+        // set deltas
+        fseek(fp, 0, SEEK_SET);
+        sentence = "-- deltas --\n";
+        while (fgets(text, 2000, fp) != NULL) {
+            if ((strstr(text, sentence)) != NULL) {
+                for (int i = 0; i < mlp->L + 1; i++) {
+                    for (int j = 0; j < mlp->d[i] + 1; j++) {
+                        fscanf(fp, "{%lf}\n", &mlp->deltas[i][j]);
+                    }
+                }
+            }
+        }
+        fclose(fp);
+        return mlp;
+    }
+    int modelInit[] = {2, 5, 2, 1};
+    return initiateMLP(modelInit, 4);
+}
+
+DLLEXPORT double readArray(double *arr, int32_t i){
+    return arr[i];
+}
+
 DLLEXPORT double predictMLPInt(MLP *mlp, int32_t *sample_inputs, int32_t is_classification) {
     double total = 0.0;
     for (int i = 0; i < mlp->d[0]; i++) {
@@ -276,7 +457,6 @@ DLLEXPORT double predictMLPFloat(MLP *mlp, float *sample_inputs, int32_t is_clas
     return mlp->X[mlp->L][1];
 }
 
-
 DLLEXPORT double *predictMLPFloatMultipleOutputs(MLP *mlp, float *sample_inputs, int32_t is_classification,
                                                  int32_t lenOneSamplesExpectedOutputs) {
     double total = 0.0;
@@ -303,6 +483,10 @@ DLLEXPORT double *predictMLPFloatMultipleOutputs(MLP *mlp, float *sample_inputs,
 }
 
 // SVM
+DLLEXPORT void freeArr(double *tab){
+    delete[] tab;
+}
+
 DLLEXPORT double *loadSVM(char *filePath) {
     char *tempSentence = "-- Efficiency --\n";
     double tempD;

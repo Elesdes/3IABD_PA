@@ -105,7 +105,7 @@ def request_from_choose():
                 elif guess == 3:
                     return render_template('pantheon.html')
                 else:
-                    render_template('not_asserted.html')
+                    return render_template('not_asserted.html')
             elif choice_of_algo == 1:
                 guess = assert_img.MLP_was_chosen(img)
                 if guess == 0:
@@ -117,7 +117,7 @@ def request_from_choose():
                 elif guess == 3:
                     return render_template('pantheon.html')
                 else:
-                    render_template('not_asserted.html')
+                    return render_template('not_asserted.html')
             elif choice_of_algo == 2:
                 guess = assert_img.RBF_was_chosen(img)
                 if guess == 0:
@@ -129,7 +129,7 @@ def request_from_choose():
                 elif guess == 3:
                     return render_template('pantheon.html')
                 else:
-                    render_template('not_asserted.html')
+                    return render_template('not_asserted.html')
             elif choice_of_algo == 3:
                 guess = assert_img.SVM_was_chosen(img)
                 if guess == 0:
