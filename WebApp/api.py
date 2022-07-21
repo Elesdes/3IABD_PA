@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import App.assert_img as ai
+import assert_img
 from flask import Flask, flash, render_template
 from flask import request
 from flask import redirect, url_for
@@ -23,8 +23,6 @@ def allowed_file(filename):
 # -------------------------------------------------------------------------
 @app.route("/submit", methods=['POST', 'GET'])
 def request_from_paris():
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
     if request.method == 'GET':
         return redirect(url_for('static', filename='index.html', code=302))
     if request.method == 'POST':
@@ -51,16 +49,16 @@ def request_from_paris():
             img = np.array(img)
             img = np.ravel(img)
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            if ai.assert_img(img) == 0:
+            if assert_img.assert_img(img) == 0:
                 # return redirect(url_for('templates', filename="eiffel.html"))
                 return render_template('eiffel.html')
-            if ai.assert_img(img) == 1:
+            if assert_img.assert_img(img) == 1:
                 return render_template('triumphal.html')
-            if ai.assert_img(img) == 2:
+            if assert_img.assert_img(img) == 2:
                 return render_template('louvre.html')
-            if ai.assert_img(img) == 3:
+            if assert_img.assert_img(img) == 3:
                 return render_template('pantheon.html')
-            if ai.assert_img(img) == -1:
+            if assert_img.assert_img(img) == -1:
                 return render_template('not_asserted.html')
     return redirect(url_for('static', filename='index.html', code=302))
 
@@ -68,8 +66,6 @@ def request_from_paris():
 # -------------------------------------------------------------------------
 @app.route("/choose", methods=['POST', 'GET'])
 def request_from_choose():
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
     if request.method == 'GET':
         return redirect(url_for('static', filename='index.html', code=302))
     if request.method == 'POST':
@@ -99,7 +95,7 @@ def request_from_choose():
             choice_of_algo = int(request.form['choice'])
 
             if choice_of_algo == 0:
-                guess = ai.linear_was_chosen(img)
+                guess = assert_img.linear_was_chosen(img)
                 if guess == 0:
                     return render_template('eiffel.html')
                 elif guess == 1:
@@ -111,7 +107,7 @@ def request_from_choose():
                 else:
                     render_template('not_asserted.html')
             elif choice_of_algo == 1:
-                guess = ai.MLP_was_chosen(img)
+                guess = assert_img.MLP_was_chosen(img)
                 if guess == 0:
                     return render_template('eiffel.html')
                 elif guess == 1:
@@ -123,7 +119,7 @@ def request_from_choose():
                 else:
                     render_template('not_asserted.html')
             elif choice_of_algo == 2:
-                guess = ai.RBF_was_chosen(img)
+                guess = assert_img.RBF_was_chosen(img)
                 if guess == 0:
                     return render_template('eiffel.html')
                 elif guess == 1:
@@ -135,7 +131,7 @@ def request_from_choose():
                 else:
                     render_template('not_asserted.html')
             elif choice_of_algo == 3:
-                guess = ai.SVM_was_chosen(img)
+                guess = assert_img.SVM_was_chosen(img)
                 if guess == 0:
                     return render_template('eiffel.html')
                 elif guess == 1:
@@ -145,7 +141,7 @@ def request_from_choose():
                 elif guess == 3:
                     return render_template('pantheon.html')
                 else:
-                    render_template('not_asserted.html')
+                    return render_template('not_asserted.html')
             else:
                 flash('No choice selected')
                 return redirect(request.url)

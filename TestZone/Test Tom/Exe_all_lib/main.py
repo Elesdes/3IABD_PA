@@ -565,7 +565,7 @@ if __name__ == '__main__':
     y_training = np.array(y_training)
     x_testing = np.array(x_testing)
     y_testing = np.array(y_testing)
-
+    """
     # Linear
     nb_iter = 10
     iter = [1000, 10000, 100000, 1000000]
@@ -600,7 +600,7 @@ if __name__ == '__main__':
                 filout.write(f"{str(DS)};{str(it)};{str(LA)};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str( statistics.mean(moy_res[2]))}"
                              f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
                              f";{str(moy_res[1].index(max(moy_res[1])))}\n")
-
+    """
     # # MLP
     # my_dll = ct.CDLL(MLP_LIB)
     # iter = 200000
@@ -609,6 +609,44 @@ if __name__ == '__main__':
     # x_training = x_training.astype(float)
     # x_testing = x_testing.astype(float)
     # training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter, learning_rate)
+    DS_TYPE = "_32_classique_max"
+    epochs = 10
+    iter = [1000000, 10000000]
+    learning_rate = [0.01, 0.05, 0.001, 0.005, 0.0001, 0.00005, 0.00001, 0.000005, 0.000001]
+    npl = [[len(x_training[0]), 20, 20, 4], [len(x_training[0]), 25, 25, 4],
+           [len(x_training[0]), 30, 30, 4], [len(x_training[0]), 40, 40, 4],
+           [len(x_training[0]), 45, 45, 4], [len(x_training[0]), 50, 50, 4]]
+    stat_data = []
+    for it in iter:
+        for LA, LZ in zip(learning_rate, npl):
+            moy_res = [[], [], []]
+            MLP_SAVE__ = MLP_SAVE + f"DS{DS}-iter{it}-LR{LA}-NPL{LZ}/"
+            for i in range(epochs):
+                MLP_SAVE_ = MLP_SAVE__ + f"num{i}/"
+                if not os.path.exists(MLP_SAVE_):
+                    os.makedirs(MLP_SAVE_)
+
+                print(f"\n--- Iteration {i} ---")
+                my_dll = ct.CDLL(MLP_LIB)
+                res = training_mlp(my_dll, x_training, y_training, x_testing, y_testing, LZ, iter, LA)
+                moy_res[0].append(res[0])
+                moy_res[1].append(res[1])
+                moy_res[2].append(res[0] - res[1])
+                print(f"Différence entre les deux : {res[0] - res[1]}")
+
+            print("--- Stat ---")
+            print("Moyenne des trainings :", statistics.mean(moy_res[0]))
+            print("Moyenne des tests :", statistics.mean(moy_res[1]))
+            print("Moyenne des differences :", statistics.mean(moy_res[2]))
+            print("La variance des train est de :", statistics.pvariance(moy_res[1]))
+            print(it, LA, statistics.mean(moy_res[0]), statistics.mean(moy_res[1]), statistics.mean(moy_res[2]),
+                  statistics.pvariance(moy_res[1]), max(moy_res[0]), max(moy_res[1]), max(moy_res[0]) - max(moy_res[1]),
+                  moy_res[1].index(max(moy_res[1])))
+            with open(f"/Save/MLP/{DS_TYPE}", "a") as filout:
+                filout.write(
+                    f"{str(DS)};{str(it)};{str(LA)};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str(statistics.mean(moy_res[2]))}"
+                    f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
+                    f";{str(moy_res[1].index(max(moy_res[1])))}\n")
     #
     # # SVM
     # my_dll = ct.CDLL(SVM_LIB)

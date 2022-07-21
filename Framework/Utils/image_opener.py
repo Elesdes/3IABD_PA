@@ -1,29 +1,26 @@
-from typing import List, Tuple
+from typing import Any
 
 import numpy as np
 import os
 from PIL import Image
+from numpy import ndarray
 
-def fill_x_and_y(x_dir: str, y_dir: str) -> List[Tuple[int, int]]:
-    x = []
-    y = []
-    for filename in os.listdir(x_dir):
-        f = os.path.join(x_dir, filename)
-        if filename != 'desktop.ini':
-            if os.path.isfile(f):
-                img = Image.open(f).convert('L')
-                img = np.array(img)
-                img = np.ravel(img)
-                x.append(img)
-                y.append(1)
-    for filename in os.listdir(y_dir):
-        f = os.path.join(y_dir, filename)
-        if filename != 'desktop.ini':
-            if os.path.isfile(f):
-                img = Image.open(f).convert('L')
-                img = np.array(img)
-                img = np.ravel(img)
-                x.append(img)
-                y.append(-1)
-    x = np.array(x)
-    return x, y
+
+def matrix_generation(directory: str, value: int) -> tuple[list[Any], list[int]]:
+    x_array, y_array = [], []
+    for file in os.listdir(directory):
+        f = os.path.join(directory, file)
+        if file != 'desktop.ini':
+            pic = Image.open(f).convert('L')
+            pic = np.array(pic)
+            pic = np.ravel(pic)
+            x_array.append(pic)
+            y_array.append(value)
+    return x_array, y_array
+
+
+def fill_x_y(x_directory: str, y_directory: str) -> tuple[ndarray, list[int]]:
+    x_array, y_array = matrix_generation(x_directory, 1)
+    x_array, y_array = matrix_generation(y_directory, -1)
+    x_array = np.array(x_array)
+    return x_array, y_array

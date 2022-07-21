@@ -1,21 +1,16 @@
 import ctypes as ct
 import os
-import sys
-import statistics
-
-import numpy as np
-from PIL import Image
+from typing import Any
 
 FRAMEWORK_LIB = "WebApp/cmake-build-debug/libWebApp.dll"
 
-LINEAR_SAVE = ""
-MLP_SAVE = ""
-RBF_SAVE = ""
-SVM_SAVE = ""
-SAVES = [LINEAR_SAVE, MLP_SAVE, RBF_SAVE, SVM_SAVE]
+LINEAR_SAVE = "WebApp/Save/Linear"
+MLP_SAVE = "WebApp/Save/MLP"
+RBF_SAVE = "WebApp/Save/RBF/Classification"
+SVM_SAVE = "WebApp/Save/SVM"
 
 
-def prepare_dll_linear(my_dll):
+"""def prepare_dll_linear(my_dll):
     my_dll.initModelWeights.argtypes = [ct.c_int32]
     my_dll.initModelWeights.restype = ct.POINTER(ct.c_float)
 
@@ -97,7 +92,38 @@ def prepare_dll_SVM(my_dll):
     my_dll.loadSVM.argtypes = [ct.c_char_p]
     my_dll.loadSVM.restype = ct.POINTER(ct.c_double)
 
-    return my_dll
+    return my_dll"""
+
+# Initialize dll for C++ / Python Interop
+def init_dll(lib: ct.CDLL) -> ct.CDLL:
+    # Linear
+    lib.predictLinearModelClassificationInt.argtypes = [ct.POINTER(ct.c_float), ct.POINTER(ct.c_int32), ct.c_int32]
+    lib.predictLinearModelClassificationInt.restype = ct.c_int32
+
+    lib.loadModelLinear.argtypes = [ct.c_char_p]
+    lib.loadModelLinear.restype = ct.POINTER(ct.c_float)
+    # MLP
+    lib.predictMLPFloatMultipleOutputs.argtypes = [ct.c_void_p, ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32]
+    lib.predictMLPFloatMultipleOutputs.restype = ct.POINTER(ct.c_double)
+
+    lib.loadModelMLP.argtypes = [ct.c_char_p]
+    lib.loadModelMLP.restype = ct.c_void_p
+    # RBF
+    lib.loadModelRBF.argtypes = [ct.POINTER(ct.c_char), ct.c_int32]
+    lib.loadModelRBF.restype = ct.POINTER(ct.POINTER(ct.c_float))
+
+    lib.newWeights.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                                   ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                                   ct.c_int32, ct.c_int32]
+    lib.newWeights.restype = ct.POINTER(ct.POINTER(ct.c_float))
+    # SVM
+    lib.loadSVM.argtypes = [ct.c_char_p]
+    lib.loadSVM.restype = ct.POINTER(ct.c_double)
+
+    lib.resultSVM.argtypes = [ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.c_int32]
+    lib.resultSVM.restype = ct.c_int32
+
+    return lib
 
 
 def linear_assert(x):
@@ -120,24 +146,28 @@ def linear_assert(x):
     colsXLen = len(x)
     rowsWLen = colsXLen + 1
     my_dll = ct.CDLL(FRAMEWORK_LIB)
-    my_dll = prepare_dll_linear(my_dll)
+    my_dll = init_dll(my_dll)
+    number_of_file = 0
 
     # Beginning
     w = list()
     for filename in os.listdir(LINEAR_SAVE):
         f = os.path.join(LINEAR_SAVE, filename)
-        # /!\ Allocated ptr list, needs to be free/destroy
-        w.append(my_dll.loadModelLinear(f))
+        # /!/ Allocated ptr list, needs to be free/destroy
+        file_binary = f.encode('ascii')
+        w.append(my_dll.loadModelLinear(file_binary))
+        number_of_file += 1
+
     result = list()
     verify = 0
-    # TODO: Trouver un moyen de rendre ça dynamique est un enfer
-    for iter_res in range(4):
+
+    for iter_res in range(number_of_file):
         result.append(my_dll.predictLinearModelClassificationInt(w[iter_res], ptr[0], rowsWLen))
-    for case_num in range(4):
+    for case_num in range(number_of_file):
         if (result[case_num] == -1):
             verify += 1
-    if (verify == 3):
-        for case_num in range(4):
+    if (verify == number_of_file - 1):
+        for case_num in range(number_of_file):
             if (result[case_num] == 1):
                 code_res = case_num
     else:
@@ -146,7 +176,6 @@ def linear_assert(x):
     for i in range(len(w)):
         # May be change in the near future
         my_dll.destroyFloatArray(w[i])
-
     return code_res
 
 
@@ -167,26 +196,29 @@ def MLP_assert(x):
     rowsXLen = 1
     colsXLen = len(x)
     my_dll = ct.CDLL(FRAMEWORK_LIB)
-    my_dll = prepare_dll_mlp(my_dll)
+    my_dll = init_dll(my_dll)
+    number_of_file = 0
+    for filename in os.listdir(LINEAR_SAVE):
+        number_of_file += 1
 
     # Beginning
     for filename in os.listdir(MLP_SAVE):
         f = os.path.join(MLP_SAVE, filename)
-        # /!\ Allocated ptr list, needs to be free/destroy
-        MLP = my_dll.loadModelMLP(f)
+        # /!/ Allocated ptr list, needs to be free/destroy
+        file_binary = f.encode('ascii')
+        MLP = my_dll.loadModelMLP(file_binary)
 
-    # TODO : à rendre dynamique
-    result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[0], 1, 4)
+    result = my_dll.predictMLPFloatMultipleOutputs(MLP, ptr_x[0], 1, number_of_file)
     verify = 0
     code_res = -1
     res_list = list()
-    for iter_test in range(4):
+    for iter_test in range(number_of_file):
         res_list.append(my_dll.readArray(result, iter_test))
     for i in res_list:
         if i == -1:
             verify += 1
-    if verify == 3:
-        for case_num in range(4):
+    if verify == number_of_file - 1:
+        for case_num in range(number_of_file):
             if (result[case_num] == 1):
                 code_res = case_num
     else:
@@ -196,9 +228,57 @@ def MLP_assert(x):
 
     return code_res
 
+
+# RBF
+
+# To convert to a double pointer
+def convert_to_pointer(c_type: ct, array_input: Any, num_rows: int, num_cols_in_rows: int) -> Any:
+    POINTER_C_TYPE = ct.POINTER(c_type)
+    ITLARR = c_type * num_cols_in_rows
+    PITLARR = POINTER_C_TYPE * num_rows
+    ptr = PITLARR()
+    for i in range(num_rows):
+        ptr[i] = ITLARR()
+        for j in range(num_cols_in_rows):
+            ptr[i][j] = array_input[i][j]
+    return ptr
+
+
+def convert_array(array_input: Any) -> Any:
+    array_output = convert_to_pointer(ct.c_float, array_input, len(array_input), len(array_input[0]))
+    array_output = ct.cast(array_output, ct.POINTER(ct.POINTER(ct.c_float)))
+    return array_output
+
+
 def RBF_assert(x):
-    # TODO: mettre fonctions testing RBF
-    return 3
+    framework_lib = init_dll(FRAMEWORK_LIB)
+    framework = ct.CDLL(framework_lib)
+
+    valid = 0
+    binary_file = RBF_SAVE.encode('ascii')
+    centers_testing = convert_array(x)
+    weights = framework.loadModelRBF(binary_file, 4)
+
+    outputs = [[1, -1, -1, -1],
+               [-1, 1, -1, -1],
+               [-1, -1, 1, -1],
+               [-1, -1, -1, 1]]
+
+    print("--- Testing ---")
+    res = framework.newWeights(weights, 1, 4,
+                               centers_testing, len(x), len(x[0]),
+                               2, 1)
+
+    for i in range(0, len(outputs)):
+        for j in range(0, 4):
+            if int(res[0][j]) == outputs[i][j]:
+                valid += 1
+                if valid == 4:
+                    return i;
+            else:
+                valid = 0
+    if valid < 4:
+        return -1
 
 
 def SVM_assert(x):
@@ -218,28 +298,29 @@ def SVM_assert(x):
     rowsXLen = len(x)
     rowsWLen = rowsXLen + 1
     my_dll = ct.CDLL(FRAMEWORK_LIB)
-    my_dll = prepare_dll_SVM(my_dll)
+    my_dll = init_dll(my_dll)
 
     w = list()
     final_result = 0
-    # TODO : à rendre dynamique
+    number_of_file = 0
     for filename in os.listdir(SVM_SAVE):
         f = os.path.join(SVM_SAVE, filename)
-        # /!\ Allocated ptr list, needs to be free/destroy
-        w.append(my_dll.loadSVM(f))
+        # /!/ Allocated ptr list, needs to be free/destroy
+        file_binary = f.encode('ascii')
+        w.append(my_dll.loadSVM(file_binary))
+        number_of_file += 1
 
     result = list()
     verify = 0
     code_res = -1
 
-    # TODO: Trouver un moyen de rendre ça dynamique est un enfer
-    for iter_res in range(4):
+    for iter_res in range(number_of_file):
         result.append(my_dll.resultSVM(ptr_x[0], w[iter_res], rowsXLen))
-    for case_num in range(4):
+    for case_num in range(number_of_file):
         if (result[case_num] == -1):
             verify += 1
-    if (verify == 3):
-        for case_num in range(4):
+    if (verify == number_of_file - 1):
+        for case_num in range(number_of_file):
             if (result[case_num] == 1):
                 code_res = case_num
     else:
@@ -253,7 +334,6 @@ def SVM_assert(x):
     return code_res
 
 
-# TODO: a changer par le meilleur algo
 def assert_img(img):
     return -1
 

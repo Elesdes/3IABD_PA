@@ -43,7 +43,7 @@ DLLEXPORT Matrix<float, -1, -1> fromArrayToEigenMatrix(float **array, int numRow
 }
 
 DLLEXPORT float **fromEigenMatrixToPointer(Matrix<float, -1, -1> matrixInput, int numRows, int numCols) {
-    auto **toArray = new float *[numRows];
+    float **toArray = new float *[numRows];
     int i = 0;
     do {
         toArray[i] = new float[numCols];
@@ -53,6 +53,58 @@ DLLEXPORT float **fromEigenMatrixToPointer(Matrix<float, -1, -1> matrixInput, in
         i += 1;
     } while (i < numRows);
     return toArray;
+}
+
+DLLEXPORT float **loadModelRBF(char *filePath, int32_t numDataset) {
+    char *tempSentence = "-- Efficiency --\n";
+    double tempD;
+    int lenModel = 0;
+    int i = 0;
+    float tempF;
+    float *w;
+    FILE *fp = fopen(filePath, "r");
+    //init l and d and the model itself
+    if (fp != NULL) {
+        char *sentence = "-- W --\n";
+        char text[2000];
+        while (fgets(text, 2000, fp) != NULL) {
+            if (strstr(text, tempSentence) != NULL) {
+                fscanf(fp, "%lf\n", &tempD);
+            }
+            if (strstr(text, sentence) != NULL) {
+                while (fscanf(fp, "{%f}\n", &tempF) != EOF) {
+                    lenModel += 1;
+                }
+            }
+        }
+        fclose(fp);
+        fp = fopen(filePath, "r");
+        w = new float[lenModel];
+        while (fgets(text, 2000, fp) != NULL) {
+            if (strstr(text, sentence) != NULL) {
+                if (strstr(text, tempSentence) != NULL) {
+                    fscanf(fp, "%lf\n", &tempD);
+                }
+                while (fscanf(fp, "{%f}\n", &w[i]) != EOF) {
+                    i++;
+                }
+            }
+        }
+        fclose(fp);
+    }
+
+    MatrixXf weights;
+    weights.resize(lenModel, numDataset);
+    i = 0;
+
+    do {
+        for (int j = 0; j < numDataset; j += 1) {
+            weights(i, j) = w[i];
+            i += 1;
+        }
+    } while(w[i] != NULL);
+
+    return fromEigenMatrixToPointer(weights, lenModel, numDataset);
 }
 
 DLLEXPORT Matrix<float, -1, -1> rowMatrix(Matrix<float, -1, -1> matrixToConvert, int numRow) {
@@ -106,13 +158,16 @@ DLLEXPORT float **newRBFWeights(float **arrayWeights, int32_t nRowsW, int32_t nC
                                 int32_t gamma, int32_t mode) {
     Matrix<float, -1, -1> centers = fromArrayToEigenMatrix(arrayCenters, nRowsC, nColsC);
     Matrix<float, -1, -1> weights = fromArrayToEigenMatrix(arrayWeights, nRowsW, nColsW);
-
-    for (int i = 0; i < weights.rows(); i += 1) {
+    MatrixXf newWeights;
+    newWeights.resize(nRowsW, nColsW);
+    for (int i = 0; i < newWeights.rows(); i += 1) {
         MatrixXf inputs = rowMatrix(centers, i);
-        weights(i, 0) = predictRBFModel(weights, centers, inputs, gamma, mode);
+        for(int j = 0; j < newWeights.cols(); j += 1) {
+            newWeights(i, j) = predictRBFModel(weights, centers, inputs, gamma, mode);
+        }
     }
 
-    return fromEigenMatrixToPointer(weights, weights.rows(), weights.cols());
+    return fromEigenMatrixToPointer(newWeights, newWeights.rows(), newWeights.cols());
 }
 
 // Linear
