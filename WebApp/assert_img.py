@@ -354,7 +354,7 @@ def SVM_assert(x):
 
 
 def assert_img(img):
-    return -1
+    return linear_assert(img)
 
 
 def linear_was_chosen(img):
