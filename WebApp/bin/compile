@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+echo "-----&gt; Installing cmake 3.2.3"
+# change to the the BUILD_DIR ($1)
+cd $1
+# download the binary (-O) silently (-s)
+wget https://raw.githubusercontent.com/Munett/cmake-binary/master/cmake.tar.gz -O cmake.tar.gz
+# make a directory to untar (like unzip) the binary
+mkdir -p vendor/cmake
+# untar the binary to the directory we want
+tar -C vendor/cmake -xvf cmake.tar.gz
