@@ -90,6 +90,9 @@ def prepare_dll_mlp(my_dll, npl):
     my_dll.saveModelMLP.argtypes = [ct.c_void_p, ct.c_char_p, ct.c_int32, ct.c_double]
     my_dll.saveModelMLP.restype = None
 
+    my_dll.loadModelMLP.argtypes = [ct.c_char_p]
+    my_dll.loadModelMLP.restype = ct.c_void_p
+
     my_dll.readArray.argtypes = [ct.POINTER(ct.c_double), ct.c_int32]
     my_dll.readArray.restype = ct.c_double
 
@@ -305,6 +308,7 @@ def training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter
 
     print("--- Testing MLP ---")
     rowsXLen, colsXLen, rowsYLen, colsYlen, arr_type_y, len_npl = set_var_mlp(x_testing, y_testing, npl)
+    # MLP = my_dll.loadModelMLP((MLP_SAVE+"MLP_0.25772610045023386.txt").encode("utf-8"))
     final_result = 0
     dict_res = {0: 0,
                 1: 0,
@@ -335,7 +339,7 @@ def training_mlp(my_dll, x_training, y_training, x_testing, y_testing, npl, iter
     # May be change in the near future
     str_file = MLP_SAVE + "MLP_" + str(final_result / len(y_testing)) + ".txt"
     str_file = str_file.encode('UTF-8')
-    my_dll.saveModelMLP(MLP, str_file, len_npl, pourcentage)
+    # my_dll.saveModelMLP(MLP, str_file, len_npl, pourcentage)
     my_dll.destroyMlpModel(MLP)
 
 
@@ -445,14 +449,14 @@ if __name__ == '__main__':
     y_training = list()
     x_testing = list()
     y_testing = list()
-    # add_img(x_training, y_training, EIFFEL_TOWER_TRAINING, [1, -1, -1, -1])
-    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING, [1, -1])
-    add_img(x_training, y_training, LOUVRE_TRAINING, [-1, 1])
-    # add_img(x_training, y_training, PANTHEON_TRAINING, [-1, -1, -1, 1])
-    # add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING, [1, -1, -1, -1])
-    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING, [1, -1])
-    add_img(x_testing, y_testing, LOUVRE_TESTING, [-1, 1])
-    # add_img(x_testing, y_testing, PANTHEON_TESTING, [-1, -1, -1, 1])
+    add_img(x_training, y_training, EIFFEL_TOWER_TRAINING, [1, -1, -1, -1])
+    add_img(x_training, y_training, TRIUMPHAL_ARC_TRAINING, [-1, 1, -1, -1])
+    add_img(x_training, y_training, LOUVRE_TRAINING, [-1, -1, 1, -1])
+    add_img(x_training, y_training, PANTHEON_TRAINING, [-1, -1, -1, 1])
+    add_img(x_testing, y_testing, EIFFEL_TOWER_TESTING, [1, -1, -1, -1])
+    add_img(x_testing, y_testing, TRIUMPHAL_ARC_TESTING, [-1, 1, -1, -1])
+    add_img(x_testing, y_testing, LOUVRE_TESTING, [-1, -1, 1, -1])
+    add_img(x_testing, y_testing, PANTHEON_TESTING, [-1, -1, -1, 1])
     
     x_training = np.array(x_training)
     y_training = np.array(y_training)
@@ -464,7 +468,7 @@ if __name__ == '__main__':
     iter = 100000
     learning_rate = 0.01
     training_linear(my_dll, x_training, y_training, x_testing, y_testing, iter, learning_rate)
-    
+    """
     # MLP
     my_dll = ct.CDLL(MLP_LIB)
     iter = 200000
@@ -511,3 +515,4 @@ if __name__ == '__main__':
         #        f"{str(DS)};{str(learning_rate[i])};{str(threshold[i])};{str(statistics.mean(moy_res[0]))};{str(statistics.mean(moy_res[1]))};{str(statistics.mean(moy_res[2]))}"
         #        f";{str(statistics.pvariance(moy_res[1]))};{str(max(moy_res[0]))};{str(max(moy_res[1]))};{str(max(moy_res[0]) - max(moy_res[1]))}"
         #        f";{str(moy_res[1].index(max(moy_res[1])))}\n")
+        """
