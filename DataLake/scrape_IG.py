@@ -56,21 +56,24 @@ def scrap_insta_loc(user_name, password,tag_loc, directorie_outpute,file_link):
         anchors = [a.get_attribute('src') for a in anchors]
         # print("anchors2 :", anchors)
         anchors = [a for a in anchors if str(a).startswith("https://scontent")]
+        # anchors = [a for a in anchors if str(a).startswith("https://instagram.fcdg")]
         # print("anchors3 :", anchors)
         return anchors
 
 
     #increase the range to sroll more
-    time.sleep(15)
+    time.sleep(30)
 
-    n_scrolls = 150
+    n_scrolls = 20
     all_anchors = []
     for j in range(0, n_scrolls):
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(5)
+        # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        driver.execute_script("window.scrollTo({  top: document.body.scrollHeight,  left: 0,  behavior: 'smooth'});")
         time.sleep(5)
         anchors = test2(driver)
         all_anchors.extend(anchors)
-        print(j)
+        print(j, len(list(set(all_anchors))))
 
     #target all the link elements on the page
 
@@ -112,5 +115,6 @@ def scrap_insta_loc(user_name, password,tag_loc, directorie_outpute,file_link):
             ext = ".png"
 
         save_as = os.path.join(path, "img" + str(counter) + ext)
+        # print(image, '\n' ,save_as)
         wget.download(image, save_as)
         counter += 1

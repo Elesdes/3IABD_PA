@@ -565,7 +565,7 @@ if __name__ == '__main__':
 
     # Linear
     nb_iter = 10
-    iter = [1000]
+    iter = [10000]
     learning_rate = [0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1]
     for it in iter:
         for LA in learning_rate:

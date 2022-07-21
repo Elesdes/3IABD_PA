@@ -8,7 +8,7 @@ import time
 
 
 def web_scraping_Pinterest(url,output_path,file_link):
-    ScrollNumber = 100
+    ScrollNumber = 30
     sleepTimer = 2
 
     options = webdriver.ChromeOptions()
