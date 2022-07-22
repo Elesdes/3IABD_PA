@@ -4,97 +4,13 @@ from typing import Any
 
 import numpy as np
 
-#FRAMEWORK_LIB = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/WebApp/cmake-build-debug/libWebApp.dll"
-FRAMEWORK_LIB = "testing.so"
+# FRAMEWORK_LIB = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/WebApp/cmake-build-debug/libWebApp.dll"
+FRAMEWORK_LIB = "libtesting.so"
 
 LINEAR_SAVE = "Save/Linear"
 MLP_SAVE = "Save/MLP"
 RBF_SAVE = "Save/RBF/Classification/test.txt"
 SVM_SAVE = "Save/SVM"
-
-"""def prepare_dll_linear(my_dll):
-    my_dll.initModelWeights.argtypes = [ct.c_int32]
-    my_dll.initModelWeights.restype = ct.POINTER(ct.c_float)
-
-    my_dll.printFloatArray.argtypes = [ct.POINTER(ct.c_float), ct.c_int32]
-    my_dll.printFloatArray.restype = ct.c_float
-
-    my_dll.destroyFloatArray.argtypes = [ct.POINTER(ct.c_float)]
-    my_dll.destroyFloatArray.restype = None
-
-    my_dll.trainLinearInt.argtypes = [ct.POINTER(ct.POINTER(ct.c_int32)), ct.POINTER(ct.c_int32),
-                                      ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_float]
-    my_dll.trainLinearInt.restype = ct.POINTER(ct.c_float)
-
-    my_dll.predictLinearModelClassificationInt.argtypes = [ct.POINTER(ct.c_float), ct.POINTER(ct.c_int32), ct.c_int32]
-    my_dll.predictLinearModelClassificationInt.restype = ct.c_int32
-
-    my_dll.loadModelLinear.argtypes = [ct.c_char_p]
-    my_dll.loadModelLinear.restype = ct.POINTER(ct.c_float)
-
-    my_dll.printIntArray.argtypes = [ct.POINTER(ct.c_int32), ct.c_int32]
-    my_dll.printIntArray.restype = None
-
-    return my_dll
-
-
-def prepare_dll_mlp(my_dll):
-    my_dll.destroyMlpModel.argtypes = [ct.c_void_p]
-    my_dll.destroyMlpModel.restype = None
-
-    my_dll.destroyDoubleArray1D.argtypes = [ct.POINTER(ct.c_double)]
-    my_dll.destroyDoubleArray1D.restype = None
-
-    my_dll.predictMLPFloatMultipleOutputs.argtypes = [ct.c_void_p, ct.POINTER(ct.c_float), ct.c_int32, ct.c_int32]
-    my_dll.predictMLPFloatMultipleOutputs.restype = ct.POINTER(ct.c_double)
-
-    my_dll.trainMLPFloatMultipleOutputs.argtypes = [ct.c_void_p, ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32,
-                                                    ct.c_int32, ct.POINTER(ct.POINTER(ct.c_int32)), ct.c_int32,
-                                                    ct.c_int32, ct.c_float, ct.c_int32, ct.c_int32]
-    my_dll.trainMLPFloatMultipleOutputs.restype = None
-
-    my_dll.loadModelMLP.argtypes = [ct.c_char_p]
-    my_dll.loadModelMLP.restype = ct.c_void_p
-
-    my_dll.readArray.argtypes = [ct.POINTER(ct.c_double), ct.c_int32]
-    my_dll.readArray.restype = ct.c_double
-
-    return my_dll
-
-
-def prepare_dll_SVM(my_dll):
-    my_dll.freeArr.argtypes = [ct.POINTER(ct.c_double)]
-    my_dll.freeArr.restype = None
-
-    my_dll.initSVMWeight.argtypes = [ct.c_int32]
-    my_dll.initSVMWeight.restype = ct.POINTER(ct.c_double)
-
-    my_dll.initSVMWeightDerive.argtypes = [ct.c_int32]
-    my_dll.initSVMWeightDerive.restype = ct.POINTER(ct.c_double)
-
-    my_dll.getHingeLoss.argtypes = [ct.POINTER(ct.c_double), ct.c_int32, ct.POINTER(ct.c_double), ct.c_int32,
-                                    ct.c_int32]
-    my_dll.getHingeLoss.restype = ct.c_double
-
-    my_dll.getSVMCost.argtypes = [ct.POINTER(ct.POINTER(ct.c_double)), ct.POINTER(ct.c_int32), ct.POINTER(ct.c_double),
-                                  ct.POINTER(ct.c_double), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_int32]
-    my_dll.getSVMCost.restype = ct.c_double
-
-    my_dll.resultSVM.argtypes = [ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.c_int32]
-    my_dll.resultSVM.restype = ct.c_int32
-
-    my_dll.trainSVM.argtypes = [ct.POINTER(ct.POINTER(ct.c_double)), ct.POINTER(ct.c_int32), ct.POINTER(ct.c_double),
-                                ct.POINTER(ct.c_double), ct.c_int32, ct.c_int32, ct.c_int32, ct.c_int32, ct.c_double,
-                                ct.c_double, ct.c_int32]
-    my_dll.trainSVM.restype = ct.POINTER(ct.c_double)
-
-    my_dll.saveSVM.argtypes = [ct.POINTER(ct.c_double), ct.c_char_p, ct.c_int32, ct.c_double]
-    my_dll.saveSVM.restype = None
-
-    my_dll.loadSVM.argtypes = [ct.c_char_p]
-    my_dll.loadSVM.restype = ct.POINTER(ct.c_double)
-
-    return my_dll"""
 
 
 # Initialize dll for C++ / Python Interop
@@ -128,8 +44,8 @@ def init_dll(lib: ct.CDLL) -> ct.CDLL:
     lib.loadModelRBF.restype = ct.POINTER(ct.POINTER(ct.c_float))
 
     lib.newRBFWeights.argtypes = [ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                               ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
-                               ct.c_int32, ct.c_int32]
+                                  ct.POINTER(ct.POINTER(ct.c_float)), ct.c_int32, ct.c_int32,
+                                  ct.c_int32, ct.c_int32]
     lib.newRBFWeights.restype = ct.POINTER(ct.POINTER(ct.c_float))
     # SVM
     lib.freeArr.argtypes = [ct.POINTER(ct.c_double)]
@@ -286,8 +202,8 @@ def RBF_assert(x):
                [-1, -1, -1, 1]]
 
     res = rbf.newRBFWeights(weights, 1, 4,
-                         centers_testing, len(new_x), len(new_x[0]),
-                         2, 1)
+                            centers_testing, len(new_x), len(new_x[0]),
+                            2, 1)
 
     for i in range(0, len(outputs)):
         for j in range(0, 4):
