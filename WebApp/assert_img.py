@@ -5,7 +5,7 @@ from typing import Any
 import numpy as np
 
 #FRAMEWORK_LIB = "C:/Users/juanm/OneDrive/Bureau/ESGI - Projets/3IABD/Projet Annuel/WebApp/cmake-build-debug/libWebApp.dll"
-FRAMEWORK_LIB = "testing.d"
+FRAMEWORK_LIB = "testing.so"
 
 LINEAR_SAVE = "Save/Linear"
 MLP_SAVE = "Save/MLP"

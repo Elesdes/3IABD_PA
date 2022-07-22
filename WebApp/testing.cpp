@@ -1,4 +1,8 @@
+#if WIN32
+#define DLLEXPORT __declspec(dllexport)
+#elif
 #define DLLEXPORT
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,9 +13,7 @@
 #include <iomanip>
 
 #if defined __GNUC__ || defined __APPLE__
-
 #include <Eigen/Dense>
-
 #else
 #include <eigen3/Eigen/Dense>
 #endif
